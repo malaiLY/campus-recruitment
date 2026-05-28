@@ -1,0 +1,5206 @@
+openapi: 3.1.0
+info:
+  title: 校园智能招聘与面试预约平台 API
+  version: 1.0.0
+  description: 面向学生、企业 HR、管理员的校园招聘与面试预约平台 OpenAPI 草案。
+servers:
+- url: http://localhost:8080/api
+  description: 本地开发环境
+- url: https://api.example.com/api
+  description: 生产环境占位
+tags:
+- name: Auth
+  description: 认证与当前用户
+- name: Student
+  description: 学生资料
+- name: Company
+  description: 企业资料与认证
+- name: File
+  description: 文件上传下载
+- name: Resume
+  description: 简历管理
+- name: Job
+  description: 岗位浏览、搜索、收藏
+- name: CompanyJob
+  description: 企业岗位管理
+- name: Application
+  description: 岗位投递
+- name: Interview
+  description: 面试场次与预约
+- name: Message
+  description: 站内信
+- name: Admin
+  description: 管理后台
+- name: Log
+  description: 日志查询
+security:
+- bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      tags:
+      - Auth
+      summary: 注册学生或企业账号
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseRegisterResponse'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: 用户登录
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLoginResponse'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+  /auth/logout:
+    post:
+      tags:
+      - Auth
+      summary: 用户登出
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /auth/me:
+    get:
+      tags:
+      - Auth
+      summary: 获取当前登录用户
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCurrentUser'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /auth/permissions:
+    get:
+      tags:
+      - Auth
+      summary: 获取当前用户权限列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponsePermissionList'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /student/profile:
+    get:
+      tags:
+      - Student
+      summary: 获取学生资料
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseStudentProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Student
+      summary: 保存学生资料
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseStudentProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentProfileSaveRequest'
+  /company/profile:
+    get:
+      tags:
+      - Company
+      summary: 获取企业资料
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Company
+      summary: 保存企业资料
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyProfileSaveRequest'
+  /company/certification:
+    post:
+      tags:
+      - Company
+      summary: 提交企业认证
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyCertificationRequest'
+  /company/certification/status:
+    get:
+      tags:
+      - Company
+      summary: 获取企业认证状态
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyCertificationStatus'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /files/upload:
+    post:
+      tags:
+      - File
+      summary: 上传文件
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              - bizType
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 文件
+                bizType:
+                  $ref: '#/components/schemas/FileBizType'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseFileUploadResponse'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /files/{fileId}/download:
+    get:
+      tags:
+      - File
+      summary: 下载文件
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: fileId
+        in: path
+        required: true
+        description: 文件 ID
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: 文件流
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /resumes:
+    post:
+      tags:
+      - Resume
+      summary: 创建简历记录
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseResume'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeCreateRequest'
+  /resumes/my:
+    get:
+      tags:
+      - Resume
+      summary: 我的简历列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseResumeList'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /resumes/{id}/default:
+    put:
+      tags:
+      - Resume
+      summary: 设置默认简历
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 简历 ID
+        schema:
+          type: integer
+          format: int64
+  /resumes/{id}:
+    delete:
+      tags:
+      - Resume
+      summary: 删除简历
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 简历 ID
+        schema:
+          type: integer
+          format: int64
+  /jobs:
+    get:
+      tags:
+      - Job
+      summary: 岗位列表 / 岗位搜索
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+      parameters:
+      - name: keyword
+        in: query
+        required: false
+        description: 关键词
+        schema:
+          type: string
+      - name: city
+        in: query
+        required: false
+        description: 城市
+        schema:
+          type: string
+      - name: salaryMin
+        in: query
+        required: false
+        description: 最低薪资
+        schema:
+          type: integer
+          format: int32
+      - name: salaryMax
+        in: query
+        required: false
+        description: 最高薪资
+        schema:
+          type: integer
+          format: int32
+      - name: education
+        in: query
+        required: false
+        description: 学历要求
+        schema:
+          type: string
+      - name: experience
+        in: query
+        required: false
+        description: 经验要求
+        schema:
+          type: string
+      - name: sort
+        in: query
+        required: false
+        description: 排序
+        schema:
+          type: string
+          enum:
+          - LATEST
+          - HOT
+      - &id001
+        name: pageNum
+        in: query
+        required: false
+        description: 页码
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - &id002
+        name: pageSize
+        in: query
+        required: false
+        description: 每页数量
+        schema:
+          type: integer
+          format: int32
+          default: 10
+  /jobs/{id}:
+    get:
+      tags:
+      - Job
+      summary: 岗位详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobDetail'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+  /jobs/{id}/favorite:
+    post:
+      tags:
+      - Job
+      summary: 收藏岗位
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+    delete:
+      tags:
+      - Job
+      summary: 取消收藏岗位
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+  /company/jobs:
+    get:
+      tags:
+      - CompanyJob
+      summary: 企业岗位列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 岗位状态
+        schema:
+          type: string
+          enum:
+          - DRAFT
+          - PENDING_REVIEW
+          - PUBLISHED
+          - REJECTED
+          - OFFLINE
+          - EXPIRED
+      - name: keyword
+        in: query
+        required: false
+        description: 关键词
+        schema:
+          type: string
+      - *id001
+      - *id002
+    post:
+      tags:
+      - CompanyJob
+      summary: 创建岗位
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJob'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreateRequest'
+  /company/jobs/{id}:
+    get:
+      tags:
+      - CompanyJob
+      summary: 企业岗位详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobDetail'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+      - CompanyJob
+      summary: 编辑岗位
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJob'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobUpdateRequest'
+  /company/jobs/{id}/submit:
+    put:
+      tags:
+      - CompanyJob
+      summary: 提交岗位审核
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+  /company/jobs/{id}/offline:
+    put:
+      tags:
+      - CompanyJob
+      summary: 下架岗位
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+  /applications:
+    post:
+      tags:
+      - Application
+      summary: 投递岗位
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplication'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationCreateRequest'
+  /applications/my:
+    get:
+      tags:
+      - Application
+      summary: 我的投递列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplicationPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 投递状态
+        schema:
+          type: string
+          enum:
+          - DELIVERED
+          - VIEWED
+          - INTERVIEW_INVITED
+          - BOOKED
+          - REJECTED
+          - CANCELED
+          - FINISHED
+      - *id001
+      - *id002
+  /applications/{id}:
+    get:
+      tags:
+      - Application
+      summary: 投递详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplicationDetail'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 投递 ID
+        schema:
+          type: integer
+          format: int64
+  /company/applications:
+    get:
+      tags:
+      - Application
+      summary: 企业投递列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplicationPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: false
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        description: 投递状态
+        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 学生姓名/学校/专业
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /company/applications/{id}/status:
+    put:
+      tags:
+      - Application
+      summary: 企业修改投递状态
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplication'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 投递 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationStatusUpdateRequest'
+  /company/interview/slots:
+    get:
+      tags:
+      - Interview
+      summary: 企业面试场次列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlotPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: false
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        description: 场次状态
+        schema:
+          type: string
+      - *id001
+      - *id002
+    post:
+      tags:
+      - Interview
+      summary: 创建面试场次
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlot'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewSlotCreateRequest'
+  /company/interview/slots/{id}:
+    put:
+      tags:
+      - Interview
+      summary: 编辑面试场次
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlot'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 场次 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewSlotUpdateRequest'
+  /company/interview/slots/{id}/close:
+    put:
+      tags:
+      - Interview
+      summary: 关闭面试场次
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 场次 ID
+        schema:
+          type: integer
+          format: int64
+  /company/interview/slots/{id}/bookings:
+    get:
+      tags:
+      - Interview
+      summary: 面试场次预约名单
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 场次 ID
+        schema:
+          type: integer
+          format: int64
+      - *id001
+      - *id002
+  /interview/slots:
+    get:
+      tags:
+      - Interview
+      summary: 查询可预约面试场次
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlotList'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int32
+      - name: applicationId
+        in: query
+        required: true
+        description: 投递 ID
+        schema:
+          type: integer
+          format: int32
+  /interview/bookings:
+    post:
+      tags:
+      - Interview
+      summary: 预约面试
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBooking'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewBookingCreateRequest'
+  /interview/bookings/my:
+    get:
+      tags:
+      - Interview
+      summary: 我的面试预约
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 预约状态
+        schema:
+          type: string
+          enum:
+          - BOOKED
+          - CANCELED
+          - FINISHED
+      - *id001
+      - *id002
+  /interview/bookings/{id}:
+    get:
+      tags:
+      - Interview
+      summary: 预约详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBookingDetail'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 预约 ID
+        schema:
+          type: integer
+          format: int64
+  /interview/bookings/{id}/cancel:
+    put:
+      tags:
+      - Interview
+      summary: 取消预约
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 预约 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+  /messages/my:
+    get:
+      tags:
+      - Message
+      summary: 我的消息列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMessagePage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: readStatus
+        in: query
+        required: false
+        description: 阅读状态
+        schema:
+          type: string
+          enum:
+          - UNREAD
+          - READ
+          - DELETED
+      - name: messageType
+        in: query
+        required: false
+        description: 消息类型
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /messages/unread-count:
+    get:
+      tags:
+      - Message
+      summary: 未读消息数
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUnreadCount'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /messages/{id}/read:
+    put:
+      tags:
+      - Message
+      summary: 标记消息已读
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 消息 ID
+        schema:
+          type: integer
+          format: int64
+  /messages/{id}:
+    delete:
+      tags:
+      - Message
+      summary: 删除消息
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 消息 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/dashboard:
+    get:
+      tags:
+      - Admin
+      summary: 管理后台数据看板
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAdminDashboard'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /admin/users:
+    get:
+      tags:
+      - Admin
+      summary: 用户列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAdminUserPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: userType
+        in: query
+        required: false
+        description: 用户类型
+        schema:
+          type: string
+          enum:
+          - STUDENT
+          - COMPANY
+          - ADMIN
+      - name: status
+        in: query
+        required: false
+        description: 状态
+        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 用户名/手机号/邮箱
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/users/{id}/disable:
+    put:
+      tags:
+      - Admin
+      summary: 禁用用户
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 用户 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/users/{id}/enable:
+    put:
+      tags:
+      - Admin
+      summary: 恢复用户
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 用户 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/companies/audits:
+    get:
+      tags:
+      - Admin
+      summary: 企业审核列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: auditStatus
+        in: query
+        required: false
+        description: 审核状态
+        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 企业名称
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/companies/{id}:
+    get:
+      tags:
+      - Admin
+      summary: 企业详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyProfile'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 企业资料 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/companies/{id}/audit:
+    put:
+      tags:
+      - Admin
+      summary: 审核企业认证
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 企业资料 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRequest'
+  /admin/jobs/audits:
+    get:
+      tags:
+      - Admin
+      summary: 岗位审核列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 岗位状态
+        schema:
+          type: string
+          enum:
+          - PENDING_REVIEW
+          - PUBLISHED
+          - REJECTED
+      - name: keyword
+        in: query
+        required: false
+        description: 岗位/企业关键词
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/jobs/{id}:
+    get:
+      tags:
+      - Admin
+      summary: 管理员查看岗位详情
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobDetail'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/jobs/{id}/audit:
+    put:
+      tags:
+      - Admin
+      summary: 审核岗位
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 岗位 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRequest'
+  /admin/dicts:
+    get:
+      tags:
+      - Admin
+      summary: 字典列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDictPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: dictType
+        in: query
+        required: false
+        description: 字典类型
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        description: 状态
+        schema:
+          type: string
+      - *id001
+      - *id002
+    post:
+      tags:
+      - Admin
+      summary: 新增字典
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDict'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DictCreateRequest'
+  /admin/dicts/{id}:
+    put:
+      tags:
+      - Admin
+      summary: 修改字典
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDict'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 字典 ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DictUpdateRequest'
+    delete:
+      tags:
+      - Admin
+      summary: 删除字典
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 字典 ID
+        schema:
+          type: integer
+          format: int64
+  /admin/logs/operation:
+    get:
+      tags:
+      - Log
+      summary: 操作日志列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOperationLogPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: username
+        in: query
+        required: false
+        description: 用户名
+        schema:
+          type: string
+      - name: module
+        in: query
+        required: false
+        description: 模块
+        schema:
+          type: string
+      - name: resultStatus
+        in: query
+        required: false
+        description: 结果状态
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/logs/login:
+    get:
+      tags:
+      - Log
+      summary: 登录日志列表
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLoginLogPage'
+        '400':
+          description: 参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未登录或 Token 失效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 资源不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 业务冲突，例如重复投递或重复预约
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 系统异常
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: username
+        in: query
+        required: false
+        description: 用户名
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        description: 登录状态
+        schema:
+          type: string
+      - *id001
+      - *id002
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserType:
+      type: string
+      enum:
+      - STUDENT
+      - COMPANY
+      - ADMIN
+    UserStatus:
+      type: string
+      enum:
+      - NORMAL
+      - DISABLED
+      - PENDING
+    CompanyAuditStatus:
+      type: string
+      enum:
+      - UNVERIFIED
+      - PENDING
+      - APPROVED
+      - REJECTED
+    JobStatus:
+      type: string
+      enum:
+      - DRAFT
+      - PENDING_REVIEW
+      - PUBLISHED
+      - REJECTED
+      - OFFLINE
+      - EXPIRED
+    ApplicationStatus:
+      type: string
+      enum:
+      - DELIVERED
+      - VIEWED
+      - INTERVIEW_INVITED
+      - BOOKED
+      - REJECTED
+      - CANCELED
+      - FINISHED
+    InterviewSlotStatus:
+      type: string
+      enum:
+      - OPEN
+      - FULL
+      - CLOSED
+      - EXPIRED
+    InterviewBookingStatus:
+      type: string
+      enum:
+      - BOOKED
+      - CANCELED
+      - FINISHED
+    MessageReadStatus:
+      type: string
+      enum:
+      - UNREAD
+      - READ
+      - DELETED
+    FileBizType:
+      type: string
+      enum:
+      - RESUME
+      - AVATAR
+      - LICENSE
+      - JOB_ATTACHMENT
+    ApiResponseVoid:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          nullable: true
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 30002
+        message:
+          type: string
+          example: 重复投递
+        data:
+          nullable: true
+    PageMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    RegisterRequest:
+      type: object
+      required:
+      - username
+      - password
+      - confirmPassword
+      - userType
+      properties:
+        username:
+          type: string
+          example: zhangsan
+        password:
+          type: string
+          format: password
+          example: '123456'
+        confirmPassword:
+          type: string
+          format: password
+          example: '123456'
+        userType:
+          $ref: '#/components/schemas/UserType'
+        phone:
+          type: string
+          example: '13800000000'
+        email:
+          type: string
+          format: email
+          example: test@example.com
+    RegisterResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 10001
+        username:
+          type: string
+          example: zhangsan
+        userType:
+          $ref: '#/components/schemas/UserType'
+    LoginRequest:
+      type: object
+      required:
+      - username
+      - password
+      - userType
+      properties:
+        username:
+          type: string
+          example: zhangsan
+        password:
+          type: string
+          format: password
+          example: '123456'
+        userType:
+          $ref: '#/components/schemas/UserType'
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: mock-jwt-token
+        expireTime:
+          type: integer
+          format: int64
+          example: 1770000000000
+        userId:
+          type: integer
+          format: int64
+          example: 10001
+        username:
+          type: string
+          example: zhangsan
+        nickname:
+          type: string
+          example: 张三
+        userType:
+          $ref: '#/components/schemas/UserType'
+        roles:
+          type: array
+          items:
+            type: string
+          example:
+          - STUDENT
+        permissions:
+          type: array
+          items:
+            type: string
+          example:
+          - resume:upload
+          - application:create
+    CurrentUser:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        nickname:
+          type: string
+        avatarUrl:
+          type: string
+        userType:
+          $ref: '#/components/schemas/UserType'
+        roles:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+    PermissionList:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+    StudentProfileSaveRequest:
+      type: object
+      required:
+      - realName
+      - school
+      - major
+      properties:
+        realName:
+          type: string
+          example: 张三
+        gender:
+          type: string
+          example: MALE
+        school:
+          type: string
+          example: 某某大学
+        major:
+          type: string
+          example: 软件工程
+        grade:
+          type: string
+          example: '2023'
+        education:
+          type: string
+          example: BACHELOR
+        city:
+          type: string
+          example: 北京
+        jobIntention:
+          type: string
+          example: Java 后端实习
+        skills:
+          type: array
+          items:
+            type: string
+          example:
+          - Java
+          - Redis
+        advantage:
+          type: string
+          example: 熟悉 Java、Spring Boot、MySQL
+    StudentProfile:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        realName:
+          type: string
+        gender:
+          type: string
+        school:
+          type: string
+        major:
+          type: string
+        grade:
+          type: string
+        education:
+          type: string
+        city:
+          type: string
+        jobIntention:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        advantage:
+          type: string
+    CompanyProfileSaveRequest:
+      type: object
+      required:
+      - companyName
+      - city
+      - contactName
+      - contactPhone
+      properties:
+        companyName:
+          type: string
+          example: XX科技有限公司
+        industry:
+          type: string
+          example: 互联网
+        scale:
+          type: string
+          example: 100-499人
+        city:
+          type: string
+          example: 北京
+        address:
+          type: string
+          example: 北京市海淀区
+        contactName:
+          type: string
+          example: 王 HR
+        contactPhone:
+          type: string
+          example: '13800000000'
+    CompanyCertificationRequest:
+      type: object
+      required:
+      - companyName
+      - city
+      - contactName
+      - contactPhone
+      - licenseFileId
+      properties:
+        companyName:
+          type: string
+        industry:
+          type: string
+        scale:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        contactName:
+          type: string
+        contactPhone:
+          type: string
+        licenseFileId:
+          type: integer
+          format: int64
+    CompanyProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        companyName:
+          type: string
+        industry:
+          type: string
+        scale:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        contactName:
+          type: string
+        contactPhone:
+          type: string
+        licenseFileId:
+          type: integer
+          format: int64
+        auditStatus:
+          $ref: '#/components/schemas/CompanyAuditStatus'
+        auditReason:
+          type: string
+    CompanyCertificationStatus:
+      type: object
+      properties:
+        auditStatus:
+          $ref: '#/components/schemas/CompanyAuditStatus'
+        auditReason:
+          type: string
+        submitTime:
+          type: string
+          format: date-time
+    FileUploadResponse:
+      type: object
+      properties:
+        fileId:
+          type: integer
+          format: int64
+        originalName:
+          type: string
+        fileSize:
+          type: integer
+          format: int64
+        fileExt:
+          type: string
+        accessUrl:
+          type: string
+    ResumeCreateRequest:
+      type: object
+      required:
+      - resumeName
+      - fileId
+      properties:
+        resumeName:
+          type: string
+          example: Java 后端实习简历
+        fileId:
+          type: integer
+          format: int64
+          example: 30001
+        isDefault:
+          type: boolean
+          example: true
+    Resume:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        resumeName:
+          type: string
+        fileId:
+          type: integer
+          format: int64
+        originalName:
+          type: string
+        isDefault:
+          type: boolean
+        status:
+          type: string
+        createTime:
+          type: string
+          format: date-time
+    JobCreateRequest:
+      type: object
+      required:
+      - title
+      - city
+      - salaryUnit
+      - description
+      - requirement
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+        city:
+          type: string
+        salaryMin:
+          type: integer
+        salaryMax:
+          type: integer
+        salaryUnit:
+          type: string
+          example: DAY
+        education:
+          type: string
+          example: BACHELOR
+        experience:
+          type: string
+          example: NONE
+        description:
+          type: string
+        requirement:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        expireTime:
+          type: string
+          format: date-time
+    JobUpdateRequest:
+      allOf:
+      - $ref: '#/components/schemas/JobCreateRequest'
+    Job:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        companyId:
+          type: integer
+          format: int64
+        companyName:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        city:
+          type: string
+        salaryMin:
+          type: integer
+        salaryMax:
+          type: integer
+        salaryUnit:
+          type: string
+        education:
+          type: string
+        experience:
+          type: string
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        tags:
+          type: array
+          items:
+            type: string
+        viewCount:
+          type: integer
+        applyCount:
+          type: integer
+        favoriteCount:
+          type: integer
+        createTime:
+          type: string
+          format: date-time
+    JobDetail:
+      allOf:
+      - $ref: '#/components/schemas/Job'
+      - type: object
+        properties:
+          description:
+            type: string
+          requirement:
+            type: string
+          auditReason:
+            type: string
+          expireTime:
+            type: string
+            format: date-time
+          favorited:
+            type: boolean
+          applied:
+            type: boolean
+    ApplicationCreateRequest:
+      type: object
+      required:
+      - jobId
+      properties:
+        jobId:
+          type: integer
+          format: int64
+        resumeId:
+          type: integer
+          format: int64
+          description: 不传则使用默认简历
+    ApplicationStatusUpdateRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        reason:
+          type: string
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        studentId:
+          type: integer
+          format: int64
+        studentName:
+          type: string
+        companyId:
+          type: integer
+          format: int64
+        companyName:
+          type: string
+        jobId:
+          type: integer
+          format: int64
+        jobTitle:
+          type: string
+        resumeId:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        applyTime:
+          type: string
+          format: date-time
+    ApplicationDetail:
+      allOf:
+      - $ref: '#/components/schemas/Application'
+      - type: object
+        properties:
+          resume:
+            $ref: '#/components/schemas/Resume'
+          logs:
+            type: array
+            items:
+              $ref: '#/components/schemas/ApplicationLog'
+    ApplicationLog:
+      type: object
+      properties:
+        beforeStatus:
+          type: string
+        afterStatus:
+          type: string
+        operatorId:
+          type: integer
+          format: int64
+        operatorType:
+          type: string
+        reason:
+          type: string
+        createTime:
+          type: string
+          format: date-time
+    InterviewSlotCreateRequest:
+      type: object
+      required:
+      - jobId
+      - title
+      - startTime
+      - endTime
+      - capacity
+      properties:
+        jobId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        capacity:
+          type: integer
+        interviewType:
+          type: string
+          enum:
+          - ONLINE
+          - OFFLINE
+          default: ONLINE
+        location:
+          type: string
+        description:
+          type: string
+    InterviewSlotUpdateRequest:
+      allOf:
+      - $ref: '#/components/schemas/InterviewSlotCreateRequest'
+    InterviewSlot:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        companyId:
+          type: integer
+          format: int64
+        jobId:
+          type: integer
+          format: int64
+        jobTitle:
+          type: string
+        title:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        capacity:
+          type: integer
+        remainCount:
+          type: integer
+        interviewType:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/InterviewSlotStatus'
+    InterviewBookingCreateRequest:
+      type: object
+      required:
+      - slotId
+      - applicationId
+      properties:
+        slotId:
+          type: integer
+          format: int64
+        applicationId:
+          type: integer
+          format: int64
+    InterviewBooking:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        slotId:
+          type: integer
+          format: int64
+        applicationId:
+          type: integer
+          format: int64
+        studentId:
+          type: integer
+          format: int64
+        studentName:
+          type: string
+        companyId:
+          type: integer
+          format: int64
+        companyName:
+          type: string
+        jobId:
+          type: integer
+          format: int64
+        jobTitle:
+          type: string
+        status:
+          $ref: '#/components/schemas/InterviewBookingStatus'
+        bookingTime:
+          type: string
+          format: date-time
+    InterviewBookingDetail:
+      allOf:
+      - $ref: '#/components/schemas/InterviewBooking'
+      - type: object
+        properties:
+          slot:
+            $ref: '#/components/schemas/InterviewSlot'
+          cancelReason:
+            type: string
+    CancelRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: 时间冲突
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        messageType:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        businessType:
+          type: string
+        businessId:
+          type: integer
+          format: int64
+        readStatus:
+          $ref: '#/components/schemas/MessageReadStatus'
+        readTime:
+          type: string
+          format: date-time
+        createTime:
+          type: string
+          format: date-time
+    UnreadCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 5
+    AdminDashboard:
+      type: object
+      properties:
+        userCount:
+          type: integer
+        companyCount:
+          type: integer
+        jobCount:
+          type: integer
+        todayApplicationCount:
+          type: integer
+        pendingCompanyAuditCount:
+          type: integer
+        pendingJobAuditCount:
+          type: integer
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        nickname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        userType:
+          $ref: '#/components/schemas/UserType'
+        status:
+          $ref: '#/components/schemas/UserStatus'
+        lastLoginTime:
+          type: string
+          format: date-time
+        createTime:
+          type: string
+          format: date-time
+    AuditRequest:
+      type: object
+      required:
+      - auditStatus
+      properties:
+        auditStatus:
+          type: string
+          enum:
+          - APPROVED
+          - REJECTED
+        auditReason:
+          type: string
+    DictCreateRequest:
+      type: object
+      required:
+      - dictType
+      - dictKey
+      - dictValue
+      properties:
+        dictType:
+          type: string
+        dictKey:
+          type: string
+        dictValue:
+          type: string
+        sort:
+          type: integer
+        remark:
+          type: string
+    DictUpdateRequest:
+      allOf:
+      - $ref: '#/components/schemas/DictCreateRequest'
+    Dict:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        dictType:
+          type: string
+        dictKey:
+          type: string
+        dictValue:
+          type: string
+        sort:
+          type: integer
+        status:
+          type: string
+        remark:
+          type: string
+    OperationLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        module:
+          type: string
+        operation:
+          type: string
+        requestMethod:
+          type: string
+        requestUrl:
+          type: string
+        requestIp:
+          type: string
+        resultStatus:
+          type: string
+        costTime:
+          type: integer
+          format: int64
+        createTime:
+          type: string
+          format: date-time
+    LoginLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        userType:
+          type: string
+        loginIp:
+          type: string
+        status:
+          type: string
+        failReason:
+          type: string
+        loginTime:
+          type: string
+          format: date-time
+    JobPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    ApplicationPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Application'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    InterviewSlotPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewSlot'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    InterviewBookingPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewBooking'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    MessagePage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    AdminUserPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminUser'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    CompanyPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompanyProfile'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    DictPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dict'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    OperationLogPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationLog'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    LoginLogPage:
+      type: object
+      properties:
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginLog'
+        total:
+          type: integer
+          format: int64
+          example: 100
+        pageNum:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 10
+    ApiResponseRegisterResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/RegisterResponse'
+    ApiResponseLoginResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/LoginResponse'
+    ApiResponseCurrentUser:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/CurrentUser'
+    ApiResponsePermissionList:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/PermissionList'
+    ApiResponseStudentProfile:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/StudentProfile'
+    ApiResponseCompanyProfile:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/CompanyProfile'
+    ApiResponseCompanyCertificationStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/CompanyCertificationStatus'
+    ApiResponseFileUploadResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/FileUploadResponse'
+    ApiResponseResume:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Resume'
+    ApiResponseResumeList:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/ResumeList'
+    ApiResponseJob:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Job'
+    ApiResponseJobDetail:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/JobDetail'
+    ApiResponseJobPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/JobPage'
+    ApiResponseApplication:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Application'
+    ApiResponseApplicationDetail:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/ApplicationDetail'
+    ApiResponseApplicationPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/ApplicationPage'
+    ApiResponseInterviewSlot:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewSlot'
+    ApiResponseInterviewSlotList:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewSlotList'
+    ApiResponseInterviewSlotPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewSlotPage'
+    ApiResponseInterviewBooking:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewBooking'
+    ApiResponseInterviewBookingDetail:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewBookingDetail'
+    ApiResponseInterviewBookingPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/InterviewBookingPage'
+    ApiResponseMessagePage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/MessagePage'
+    ApiResponseUnreadCount:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/UnreadCount'
+    ApiResponseAdminDashboard:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/AdminDashboard'
+    ApiResponseAdminUserPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/AdminUserPage'
+    ApiResponseCompanyPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/CompanyPage'
+    ApiResponseDict:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/Dict'
+    ApiResponseDictPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/DictPage'
+    ApiResponseOperationLogPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/OperationLogPage'
+    ApiResponseLoginLogPage:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/LoginLogPage'
+    ResumeList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Resume'
+    InterviewSlotList:
+      type: array
+      items:
+        $ref: '#/components/schemas/InterviewSlot'

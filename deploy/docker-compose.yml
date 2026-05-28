@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: campus-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: campus_recruitment
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/V001__初始化数据库结构.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
+    networks:
+      - campus-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: campus-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - campus-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: campus-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: campus
+      RABBITMQ_DEFAULT_PASS: campus123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - campus-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: campus-es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - campus-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: campus-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - campus-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  es_data:
+  minio_data:
+
+networks:
+  campus-network:
+    driver: bridge
