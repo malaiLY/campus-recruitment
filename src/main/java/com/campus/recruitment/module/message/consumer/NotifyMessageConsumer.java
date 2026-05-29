@@ -81,6 +81,9 @@ public class NotifyMessageConsumer {
             channel.basicAck(deliveryTag, false);
             log.info("消息消费成功: messageId={}, receiverId={}", messageId, receiverId);
 
+        } catch (com.fasterxml.jackson.core.JsonProcessingException jsonEx) {
+            log.error("消息反序列化失败，直接进入DLQ: {}", jsonEx.getMessage());
+            channel.basicNack(deliveryTag, false, false);
         } catch (Exception e) {
             log.error("消息消费失败: {}", e.getMessage(), e);
             handleConsumeError(message, channel, deliveryTag, e);

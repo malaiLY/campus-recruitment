@@ -26,6 +26,15 @@ public class MqMessageLog {
     @TableField("send_status")
     private String sendStatus;
 
+    @TableField("send_exchange")
+    private String sendExchange;
+
+    @TableField("send_routing_key")
+    private String sendRoutingKey;
+
+    @TableField("message_body")
+    private String messageBody;
+
     @TableField("consume_status")
     private String consumeStatus;
 

@@ -2,6 +2,7 @@ package com.campus.recruitment.common.mq;
 
 import com.campus.recruitment.entity.MqMessageLog;
 import com.campus.recruitment.mapper.MqMessageLogMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,6 +19,7 @@ public class OutboxService {
 
     private final RabbitTemplate rabbitTemplate;
     private final MqMessageLogMapper mqMessageLogMapper;
+    private final ObjectMapper objectMapper;
 
     public void sendAfterCommit(String exchange, String routingKey, Object message,
                                 String messageId, String messageType, Long businessId) {
@@ -26,10 +28,17 @@ public class OutboxService {
         logRecord.setMessageType(messageType);
         logRecord.setBusinessId(businessId);
         logRecord.setSendStatus("SENDING");
+        logRecord.setSendExchange(exchange);
+        logRecord.setSendRoutingKey(routingKey);
         logRecord.setConsumeStatus("INIT");
         logRecord.setRetryCount(0);
         logRecord.setCreateTime(LocalDateTime.now());
         logRecord.setUpdateTime(LocalDateTime.now());
+        try {
+            logRecord.setMessageBody(objectMapper.writeValueAsString(message));
+        } catch (Exception e) {
+            log.warn("序列化MQ消息体失败: {}", e.getMessage());
+        }
         mqMessageLogMapper.insert(logRecord);
 
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -46,7 +55,7 @@ public class OutboxService {
         });
     }
 
-    private void sendAndUpdateLog(MqMessageLog logRecord, String exchange, String routingKey,
+    void sendAndUpdateLog(MqMessageLog logRecord, String exchange, String routingKey,
                                   Object message, String messageId) {
         try {
             rabbitTemplate.convertAndSend(exchange, routingKey, message);

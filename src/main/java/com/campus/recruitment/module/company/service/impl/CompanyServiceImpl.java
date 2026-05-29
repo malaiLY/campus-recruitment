@@ -49,6 +49,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public void saveProfile(CompanyProfileDTO dto) {
         Long userId = LoginUserContext.getUserId();
+
+        if (dto.getLicenseFileId() != null) {
+            validateLicenseFile(dto.getLicenseFileId(), userId);
+        }
+
         CompanyProfile existing = companyProfileMapper.selectOne(
                 new LambdaQueryWrapper<CompanyProfile>().eq(CompanyProfile::getUserId, userId));
 

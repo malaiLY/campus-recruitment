@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +54,7 @@ public class FileServiceImpl implements FileService {
     @Transactional(rollbackFor = Exception.class)
     public FileUploadVO uploadFile(MultipartFile file, String bizType) {
         validateFile(file, bizType);
+        validateFileMagic(file, getFileExtension(file.getOriginalFilename()));
 
         String fileExt = getFileExtension(file.getOriginalFilename());
         String objectName = generateObjectName(bizType, fileExt);
@@ -154,6 +156,33 @@ public class FileServiceImpl implements FileService {
             case "png" -> contentType.equals("image/png");
             default -> true;
         };
+    }
+
+    private void validateFileMagic(MultipartFile file, String fileExt) {
+        try (InputStream is = file.getInputStream(); BufferedInputStream bis = new BufferedInputStream(is)) {
+            byte[] header = new byte[8];
+            int read = bis.read(header);
+            if (read < 4) {
+                throw new BizException(ErrorCode.FILE_TYPE_NOT_ALLOWED, "文件头读取失败");
+            }
+
+            boolean valid = switch (fileExt) {
+                case "pdf" -> header[0] == 0x25 && header[1] == 0x50 && header[2] == 0x44 && header[3] == 0x46; // %PDF
+                case "jpg", "jpeg" -> (header[0] & 0xFF) == 0xFF && (header[1] & 0xFF) == 0xD8; // FF D8
+                case "png" -> (header[0] & 0xFF) == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47; // .PNG
+                case "doc" -> header[0] == (byte) 0xD0 && header[1] == (byte) 0xCF && header[2] == 0x11 && header[3] == (byte) 0xE0; // OLE
+                case "docx" -> header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04; // ZIP (docx is zip)
+                default -> true;
+            };
+
+            if (!valid) {
+                throw new BizException(ErrorCode.FILE_TYPE_NOT_ALLOWED, "文件内容与声明的格式不匹配");
+            }
+        } catch (BizException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BizException(ErrorCode.SYSTEM_ERROR, "文件校验失败");
+        }
     }
 
     private String getFileExtension(String filename) {

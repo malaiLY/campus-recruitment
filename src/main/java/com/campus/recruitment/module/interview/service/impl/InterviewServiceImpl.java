@@ -311,30 +311,34 @@ public class InterviewServiceImpl implements InterviewService {
         if (!booking.getStudentId().equals(userId)) {
             throw new BizException(ErrorCode.FORBIDDEN);
         }
-        if (!InterviewBookingStatus.BOOKED.name().equals(booking.getStatus())) {
+
+        int updated = interviewBookingMapper.cancelIfBooked(bookingId, userId);
+        if (updated == 0) {
             throw new BizException(ErrorCode.PARAM_ERROR, "该预约已取消或已完成");
         }
 
-        booking.setStatus(InterviewBookingStatus.CANCELED.name());
-        booking.setUpdateTime(LocalDateTime.now());
-        interviewBookingMapper.updateById(booking);
-
         String stockKey = RedisConstants.INTERVIEW_SLOT_STOCK_PREFIX + booking.getSlotId();
-        stringRedisTemplate.opsForValue().increment(stockKey);
-
         String userBookingKey = RedisConstants.INTERVIEW_BOOKING_USER_PREFIX + booking.getSlotId() + ":" + userId;
-        stringRedisTemplate.delete(userBookingKey);
 
-        InterviewSlot slot = interviewSlotMapper.selectById(booking.getSlotId());
-        if (slot != null) {
+        boolean redisReleased = false;
+        try {
+            stringRedisTemplate.opsForValue().increment(stockKey);
+            stringRedisTemplate.delete(userBookingKey);
+            redisReleased = true;
+
             interviewSlotMapper.incrementRemainCount(booking.getSlotId());
-        }
 
-        JobApplication application = jobApplicationMapper.selectById(booking.getApplicationId());
-        if (application != null && ApplicationStatus.BOOKED.name().equals(application.getStatus())) {
-            application.setStatus(ApplicationStatus.INTERVIEW_INVITED.name());
-            application.setUpdateTime(LocalDateTime.now());
-            jobApplicationMapper.updateById(application);
+            JobApplication application = jobApplicationMapper.selectById(booking.getApplicationId());
+            if (application != null && ApplicationStatus.BOOKED.name().equals(application.getStatus())) {
+                application.setStatus(ApplicationStatus.INTERVIEW_INVITED.name());
+                application.setUpdateTime(LocalDateTime.now());
+                jobApplicationMapper.updateById(application);
+            }
+        } catch (Exception e) {
+            if (redisReleased) {
+                stringRedisTemplate.opsForValue().decrement(stockKey);
+            }
+            throw e;
         }
     }
 

@@ -109,6 +109,9 @@ public class JobEsSyncConsumer {
             channel.basicAck(deliveryTag, false);
             log.info("ES同步MQ消息消费成功: action={}, jobId={}", action, jobId);
 
+        } catch (com.fasterxml.jackson.core.JsonProcessingException jsonEx) {
+            log.error("ES同步消息反序列化失败，直接进入DLQ: {}", jsonEx.getMessage());
+            channel.basicNack(deliveryTag, false, false);
         } catch (Exception e) {
             log.error("ES同步MQ消息消费失败: {}", e.getMessage(), e);
             handleConsumeError(message, channel, deliveryTag, e);
