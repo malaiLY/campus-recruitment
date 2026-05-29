@@ -29,14 +29,23 @@ public class OutboxRetryTask {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(1);
         List<MqMessageLog> failedRecords = mqMessageLogMapper.selectList(
                 new LambdaQueryWrapper<MqMessageLog>()
-                        .in(MqMessageLog::getSendStatus, "SEND_FAILED", "SENDING")
+                        .in(MqMessageLog::getSendStatus, "SEND_FAILED", "SENDING", "RETRYING")
                         .lt(MqMessageLog::getUpdateTime, threshold)
-                        .lt(MqMessageLog::getRetryCount, MAX_SEND_RETRIES)
+                        .lt(MqMessageLog::getSendRetryCount, MAX_SEND_RETRIES)
                         .last("LIMIT 20"));
 
         for (MqMessageLog record : failedRecords) {
+            if (mqMessageLogMapper.claimRetry(record.getId(), threshold, MAX_SEND_RETRIES) != 1) {
+                continue;
+            }
+
             if (record.getSendExchange() == null || record.getSendRoutingKey() == null || record.getMessageBody() == null) {
-                log.warn("Outbox重试跳过: messageId={}, 缺少exchange/routingKey/body", record.getMessageId());
+                log.warn("Skip outbox retry because exchange/routingKey/body is missing: messageId={}", record.getMessageId());
+                record.setSendStatus("SEND_FAILED");
+                record.setSendRetryCount(nextSendRetryCount(record));
+                record.setErrorMessage("Missing exchange/routingKey/body for outbox retry");
+                record.setUpdateTime(LocalDateTime.now());
+                mqMessageLogMapper.updateById(record);
                 continue;
             }
 
@@ -44,20 +53,25 @@ public class OutboxRetryTask {
                 Object body = objectMapper.readValue(record.getMessageBody(), Object.class);
                 rabbitTemplate.convertAndSend(record.getSendExchange(), record.getSendRoutingKey(), body);
                 record.setSendStatus("SENT");
-                record.setRetryCount(record.getRetryCount() + 1);
+                record.setSendRetryCount(nextSendRetryCount(record));
                 record.setErrorMessage(null);
                 record.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.updateById(record);
-                log.info("Outbox重试发送成功: messageId={}, retryCount={}", record.getMessageId(), record.getRetryCount());
+                log.info("Outbox retry sent: messageId={}, sendRetryCount={}",
+                        record.getMessageId(), record.getSendRetryCount());
             } catch (Exception e) {
                 record.setSendStatus("SEND_FAILED");
-                record.setRetryCount(record.getRetryCount() + 1);
+                record.setSendRetryCount(nextSendRetryCount(record));
                 record.setErrorMessage(e.getMessage());
                 record.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.updateById(record);
-                log.warn("Outbox重试发送失败: messageId={}, retryCount={}, error={}",
-                        record.getMessageId(), record.getRetryCount(), e.getMessage());
+                log.warn("Outbox retry failed: messageId={}, sendRetryCount={}, error={}",
+                        record.getMessageId(), record.getSendRetryCount(), e.getMessage());
             }
         }
+    }
+
+    private int nextSendRetryCount(MqMessageLog record) {
+        return (record.getSendRetryCount() == null ? 0 : record.getSendRetryCount()) + 1;
     }
 }

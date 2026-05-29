@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -320,11 +321,11 @@ public class InterviewServiceImpl implements InterviewService {
         String stockKey = RedisConstants.INTERVIEW_SLOT_STOCK_PREFIX + booking.getSlotId();
         String userBookingKey = RedisConstants.INTERVIEW_BOOKING_USER_PREFIX + booking.getSlotId() + ":" + userId;
 
-        boolean redisReleased = false;
+        boolean stockReleased = false;
         try {
             stringRedisTemplate.opsForValue().increment(stockKey);
+            stockReleased = true;
             stringRedisTemplate.delete(userBookingKey);
-            redisReleased = true;
 
             interviewSlotMapper.incrementRemainCount(booking.getSlotId());
 
@@ -335,8 +336,17 @@ public class InterviewServiceImpl implements InterviewService {
                 jobApplicationMapper.updateById(application);
             }
         } catch (Exception e) {
-            if (redisReleased) {
-                stringRedisTemplate.opsForValue().decrement(stockKey);
+            if (stockReleased) {
+                try {
+                    stringRedisTemplate.opsForValue().decrement(stockKey);
+                    stringRedisTemplate.opsForValue().set(
+                            userBookingKey,
+                            userId.toString(),
+                            RedisConstants.INTERVIEW_BOOKING_TTL_SECONDS,
+                            TimeUnit.SECONDS);
+                } catch (Exception redisException) {
+                    log.warn("Restore Redis booking state failed: bookingId={}, error={}", bookingId, redisException.getMessage());
+                }
             }
             throw e;
         }

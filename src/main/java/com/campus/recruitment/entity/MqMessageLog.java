@@ -38,8 +38,11 @@ public class MqMessageLog {
     @TableField("consume_status")
     private String consumeStatus;
 
-    @TableField("retry_count")
-    private Integer retryCount;
+    @TableField("send_retry_count")
+    private Integer sendRetryCount;
+
+    @TableField("consume_retry_count")
+    private Integer consumeRetryCount;
 
     @TableField("error_message")
     private String errorMessage;

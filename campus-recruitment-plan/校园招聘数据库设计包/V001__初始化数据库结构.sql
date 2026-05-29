@@ -476,12 +476,13 @@ CREATE TABLE mq_message_log (
   message_id VARCHAR(128) NOT NULL COMMENT '消息唯一ID',
   message_type VARCHAR(64) NOT NULL COMMENT '消息类型',
   business_id BIGINT UNSIGNED DEFAULT NULL COMMENT '业务ID',
-  send_status VARCHAR(32) DEFAULT NULL COMMENT '生产侧发送状态：SENDING/SENT/SEND_FAILED',
+  send_status VARCHAR(32) DEFAULT NULL COMMENT '生产侧发送状态：SENDING/RETRYING/SENT/SEND_FAILED',
   send_exchange VARCHAR(128) DEFAULT NULL COMMENT '发送交换机',
   send_routing_key VARCHAR(128) DEFAULT NULL COMMENT '发送路由键',
   message_body TEXT DEFAULT NULL COMMENT '原始消息体(JSON)',
   consume_status VARCHAR(32) NOT NULL DEFAULT 'INIT' COMMENT '消费侧状态：INIT/CONSUMED/CONSUME_FAILED',
-  retry_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '重试次数',
+  send_retry_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '生产侧发送重试次数',
+  consume_retry_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '消费侧重试次数',
   error_message TEXT DEFAULT NULL COMMENT '错误信息',
   consume_time DATETIME(3) DEFAULT NULL COMMENT '消费时间',
   create_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
@@ -489,6 +490,7 @@ CREATE TABLE mq_message_log (
   PRIMARY KEY (id),
   UNIQUE KEY uk_mq_message_id (message_id),
   KEY idx_mq_status_time (consume_status, create_time),
+  KEY idx_mq_send_retry (send_status, update_time, send_retry_count),
   KEY idx_mq_business (message_type, business_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='MQ消息消费日志表';
 

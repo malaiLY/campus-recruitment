@@ -31,7 +31,8 @@ public class OutboxService {
         logRecord.setSendExchange(exchange);
         logRecord.setSendRoutingKey(routingKey);
         logRecord.setConsumeStatus("INIT");
-        logRecord.setRetryCount(0);
+        logRecord.setSendRetryCount(0);
+        logRecord.setConsumeRetryCount(0);
         logRecord.setCreateTime(LocalDateTime.now());
         logRecord.setUpdateTime(LocalDateTime.now());
         try {

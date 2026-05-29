@@ -5,6 +5,8 @@ import com.campus.recruitment.common.constant.RabbitMQConstants;
 import com.campus.recruitment.entity.MqMessageLog;
 import com.campus.recruitment.mapper.MqMessageLogMapper;
 import com.campus.recruitment.module.message.service.MessageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ public class NotifyMessageConsumer {
 
     private final MessageService messageService;
     private final MqMessageLogMapper mqMessageLogMapper;
+    private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = RabbitMQConstants.NOTIFY_QUEUE)
     public void handleMessage(Message message, Channel channel) throws IOException {
@@ -33,7 +37,7 @@ public class NotifyMessageConsumer {
             String messageId = (String) notifyMessage.get("messageId");
 
             if (messageId == null) {
-                log.warn("MQ消息缺少messageId，跳过消费");
+                log.warn("Notify message is missing messageId, ack and skip");
                 channel.basicAck(deliveryTag, false);
                 return;
             }
@@ -43,7 +47,7 @@ public class NotifyMessageConsumer {
                             .eq(MqMessageLog::getMessageId, messageId));
 
             if (existingLog != null && "CONSUMED".equals(existingLog.getConsumeStatus())) {
-                log.info("消息已消费，跳过: messageId={}", messageId);
+                log.info("Notify message already consumed, skip: messageId={}", messageId);
                 channel.basicAck(deliveryTag, false);
                 return;
             }
@@ -62,7 +66,7 @@ public class NotifyMessageConsumer {
             if (existingLog != null) {
                 existingLog.setConsumeStatus("CONSUMED");
                 existingLog.setConsumeTime(LocalDateTime.now());
-                existingLog.setRetryCount(0);
+                existingLog.setConsumeRetryCount(0);
                 existingLog.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.updateById(existingLog);
             } else {
@@ -71,32 +75,34 @@ public class NotifyMessageConsumer {
                 logRecord.setMessageType(messageType);
                 logRecord.setBusinessId(businessId);
                 logRecord.setConsumeStatus("CONSUMED");
+                logRecord.setSendRetryCount(0);
+                logRecord.setConsumeRetryCount(0);
                 logRecord.setConsumeTime(LocalDateTime.now());
-                logRecord.setRetryCount(0);
                 logRecord.setCreateTime(LocalDateTime.now());
                 logRecord.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.insert(logRecord);
             }
 
             channel.basicAck(deliveryTag, false);
-            log.info("消息消费成功: messageId={}, receiverId={}", messageId, receiverId);
+            log.info("Notify message consumed: messageId={}, receiverId={}", messageId, receiverId);
 
-        } catch (com.fasterxml.jackson.core.JsonProcessingException jsonEx) {
-            log.error("消息反序列化失败，直接进入DLQ: {}", jsonEx.getMessage());
+        } catch (JsonProcessingException jsonEx) {
+            log.error("Notify message is invalid JSON, send to DLQ: {}", jsonEx.getMessage());
+            channel.basicNack(deliveryTag, false, false);
+        } catch (NumberFormatException formatEx) {
+            log.error("Notify message has invalid numeric field, send to DLQ: {}", formatEx.getMessage());
             channel.basicNack(deliveryTag, false, false);
         } catch (Exception e) {
-            log.error("消息消费失败: {}", e.getMessage(), e);
+            log.error("Notify message consume failed: {}", e.getMessage(), e);
             handleConsumeError(message, channel, deliveryTag, e);
         }
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> parseMessage(Message message) throws IOException {
-        String body = new String(message.getBody(), "UTF-8");
-        log.info("收到MQ消息: {}", body);
-
-        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-        return mapper.readValue(body, Map.class);
+        String body = new String(message.getBody(), StandardCharsets.UTF_8);
+        log.info("Received notify message: {}", body);
+        return objectMapper.readValue(body, Map.class);
     }
 
     private Long toLong(Object value) {
@@ -110,10 +116,16 @@ public class NotifyMessageConsumer {
     }
 
     private void handleConsumeError(Message message, Channel channel, long deliveryTag, Exception e) throws IOException {
-        int retryCount = 0;
+        int retryCount;
         try {
             Map<String, Object> notifyMessage = parseMessage(message);
             String messageId = (String) notifyMessage.get("messageId");
+            if (messageId == null) {
+                log.error("Notify message failed and has no messageId, send to DLQ");
+                channel.basicNack(deliveryTag, false, false);
+                return;
+            }
+
             String messageType = (String) notifyMessage.get("messageType");
             Long businessId = toLong(notifyMessage.get("businessId"));
 
@@ -128,21 +140,24 @@ public class NotifyMessageConsumer {
                 logRecord.setBusinessId(businessId);
                 logRecord.setConsumeStatus("CONSUME_FAILED");
                 logRecord.setErrorMessage(e.getMessage());
-                logRecord.setRetryCount(1);
+                logRecord.setSendRetryCount(0);
+                logRecord.setConsumeRetryCount(1);
                 logRecord.setCreateTime(LocalDateTime.now());
                 logRecord.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.insert(logRecord);
                 retryCount = 1;
             } else {
+                retryCount = nextConsumeRetryCount(logRecord);
                 logRecord.setConsumeStatus("CONSUME_FAILED");
                 logRecord.setErrorMessage(e.getMessage());
-                logRecord.setRetryCount(logRecord.getRetryCount() + 1);
+                logRecord.setConsumeRetryCount(retryCount);
                 logRecord.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.updateById(logRecord);
-                retryCount = logRecord.getRetryCount();
             }
         } catch (Exception parseException) {
-            log.error("记录消费失败日志异常: {}", parseException.getMessage());
+            log.error("Failed to record notify consume error, send to DLQ: {}", parseException.getMessage());
+            channel.basicNack(deliveryTag, false, false);
+            return;
         }
 
         if (retryCount < 3) {
@@ -150,5 +165,9 @@ public class NotifyMessageConsumer {
         } else {
             channel.basicNack(deliveryTag, false, false);
         }
+    }
+
+    private int nextConsumeRetryCount(MqMessageLog record) {
+        return (record.getConsumeRetryCount() == null ? 0 : record.getConsumeRetryCount()) + 1;
     }
 }

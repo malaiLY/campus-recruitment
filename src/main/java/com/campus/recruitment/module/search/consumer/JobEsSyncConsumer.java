@@ -7,6 +7,7 @@ import com.campus.recruitment.entity.MqMessageLog;
 import com.campus.recruitment.mapper.JobMapper;
 import com.campus.recruitment.mapper.MqMessageLogMapper;
 import com.campus.recruitment.module.search.service.JobSearchService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ public class JobEsSyncConsumer {
             Long jobId = toLong(body.get("jobId"));
 
             if (jobId == null) {
-                log.warn("ES同步MQ消息缺少jobId，跳过消费");
+                log.warn("ES sync message is missing jobId, ack and skip");
                 channel.basicAck(deliveryTag, false);
                 return;
             }
@@ -51,7 +53,8 @@ public class JobEsSyncConsumer {
                                 .eq(MqMessageLog::getMessageId, messageId));
 
                 if (existingLog != null && "CONSUMED".equals(existingLog.getConsumeStatus())) {
-                    log.info("ES同步消息已消费，跳过: messageId={}, action={}, jobId={}", messageId, action, jobId);
+                    log.info("ES sync message already consumed, skip: messageId={}, action={}, jobId={}",
+                            messageId, action, jobId);
                     channel.basicAck(deliveryTag, false);
                     return;
                 }
@@ -63,7 +66,7 @@ public class JobEsSyncConsumer {
                     if (jobForSave != null) {
                         jobSearchService.saveJob(jobForSave);
                     } else {
-                        log.warn("岗位不存在，无法保存到ES: jobId={}", jobId);
+                        log.warn("Job does not exist, skip ES save: jobId={}", jobId);
                     }
                     break;
                 case "delete":
@@ -74,11 +77,11 @@ public class JobEsSyncConsumer {
                     if (jobForUpdate != null) {
                         jobSearchService.syncJob(jobForUpdate);
                     } else {
-                        log.warn("岗位不存在，无法同步到ES: jobId={}", jobId);
+                        log.warn("Job does not exist, skip ES update: jobId={}", jobId);
                     }
                     break;
                 default:
-                    log.warn("未知的ES同步动作: action={}", action);
+                    log.warn("Unknown ES sync action: action={}", action);
                     break;
             }
 
@@ -89,7 +92,7 @@ public class JobEsSyncConsumer {
                 if (existingForUpdate != null) {
                     existingForUpdate.setConsumeStatus("CONSUMED");
                     existingForUpdate.setConsumeTime(LocalDateTime.now());
-                    existingForUpdate.setRetryCount(0);
+                    existingForUpdate.setConsumeRetryCount(0);
                     existingForUpdate.setUpdateTime(LocalDateTime.now());
                     mqMessageLogMapper.updateById(existingForUpdate);
                 } else {
@@ -98,8 +101,9 @@ public class JobEsSyncConsumer {
                     logRecord.setMessageType("JOB_ES_SYNC");
                     logRecord.setBusinessId(jobId);
                     logRecord.setConsumeStatus("CONSUMED");
+                    logRecord.setSendRetryCount(0);
+                    logRecord.setConsumeRetryCount(0);
                     logRecord.setConsumeTime(LocalDateTime.now());
-                    logRecord.setRetryCount(0);
                     logRecord.setCreateTime(LocalDateTime.now());
                     logRecord.setUpdateTime(LocalDateTime.now());
                     mqMessageLogMapper.insert(logRecord);
@@ -107,53 +111,62 @@ public class JobEsSyncConsumer {
             }
 
             channel.basicAck(deliveryTag, false);
-            log.info("ES同步MQ消息消费成功: action={}, jobId={}", action, jobId);
+            log.info("ES sync message consumed: action={}, jobId={}", action, jobId);
 
-        } catch (com.fasterxml.jackson.core.JsonProcessingException jsonEx) {
-            log.error("ES同步消息反序列化失败，直接进入DLQ: {}", jsonEx.getMessage());
+        } catch (JsonProcessingException jsonEx) {
+            log.error("ES sync message is invalid JSON, send to DLQ: {}", jsonEx.getMessage());
+            channel.basicNack(deliveryTag, false, false);
+        } catch (NumberFormatException formatEx) {
+            log.error("ES sync message has invalid numeric field, send to DLQ: {}", formatEx.getMessage());
             channel.basicNack(deliveryTag, false, false);
         } catch (Exception e) {
-            log.error("ES同步MQ消息消费失败: {}", e.getMessage(), e);
+            log.error("ES sync message consume failed: {}", e.getMessage(), e);
             handleConsumeError(message, channel, deliveryTag, e);
         }
     }
 
     private void handleConsumeError(Message message, Channel channel, long deliveryTag, Exception e) throws IOException {
-        int retryCount = 0;
+        int retryCount;
         try {
             Map<String, Object> body = parseMessage(message);
             String messageId = (String) body.get("messageId");
-            String action = (String) body.get("action");
+            if (messageId == null) {
+                log.error("ES sync message failed and has no messageId, send to DLQ");
+                channel.basicNack(deliveryTag, false, false);
+                return;
+            }
+
             Long jobId = toLong(body.get("jobId"));
 
-            if (messageId != null) {
-                MqMessageLog logRecord = mqMessageLogMapper.selectOne(
-                        new LambdaQueryWrapper<MqMessageLog>()
-                                .eq(MqMessageLog::getMessageId, messageId));
+            MqMessageLog logRecord = mqMessageLogMapper.selectOne(
+                    new LambdaQueryWrapper<MqMessageLog>()
+                            .eq(MqMessageLog::getMessageId, messageId));
 
-                if (logRecord == null) {
-                    logRecord = new MqMessageLog();
-                    logRecord.setMessageId(messageId);
-                    logRecord.setMessageType("JOB_ES_SYNC");
-                    logRecord.setBusinessId(jobId);
-                    logRecord.setConsumeStatus("CONSUME_FAILED");
-                    logRecord.setErrorMessage(e.getMessage());
-                    logRecord.setRetryCount(1);
-                    logRecord.setCreateTime(LocalDateTime.now());
-                    logRecord.setUpdateTime(LocalDateTime.now());
-                    mqMessageLogMapper.insert(logRecord);
-                    retryCount = 1;
-                } else {
-                    logRecord.setConsumeStatus("CONSUME_FAILED");
-                    logRecord.setErrorMessage(e.getMessage());
-                    logRecord.setRetryCount(logRecord.getRetryCount() + 1);
-                    logRecord.setUpdateTime(LocalDateTime.now());
-                    mqMessageLogMapper.updateById(logRecord);
-                    retryCount = logRecord.getRetryCount();
-                }
+            if (logRecord == null) {
+                logRecord = new MqMessageLog();
+                logRecord.setMessageId(messageId);
+                logRecord.setMessageType("JOB_ES_SYNC");
+                logRecord.setBusinessId(jobId);
+                logRecord.setConsumeStatus("CONSUME_FAILED");
+                logRecord.setErrorMessage(e.getMessage());
+                logRecord.setSendRetryCount(0);
+                logRecord.setConsumeRetryCount(1);
+                logRecord.setCreateTime(LocalDateTime.now());
+                logRecord.setUpdateTime(LocalDateTime.now());
+                mqMessageLogMapper.insert(logRecord);
+                retryCount = 1;
+            } else {
+                retryCount = nextConsumeRetryCount(logRecord);
+                logRecord.setConsumeStatus("CONSUME_FAILED");
+                logRecord.setErrorMessage(e.getMessage());
+                logRecord.setConsumeRetryCount(retryCount);
+                logRecord.setUpdateTime(LocalDateTime.now());
+                mqMessageLogMapper.updateById(logRecord);
             }
         } catch (Exception parseException) {
-            log.error("记录ES同步消费失败日志异常: {}", parseException.getMessage());
+            log.error("Failed to record ES sync consume error, send to DLQ: {}", parseException.getMessage());
+            channel.basicNack(deliveryTag, false, false);
+            return;
         }
 
         if (retryCount < 3) {
@@ -165,8 +178,8 @@ public class JobEsSyncConsumer {
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> parseMessage(Message message) throws IOException {
-        String body = new String(message.getBody(), "UTF-8");
-        log.info("收到ES同步MQ消息: {}", body);
+        String body = new String(message.getBody(), StandardCharsets.UTF_8);
+        log.info("Received ES sync message: {}", body);
         return objectMapper.readValue(body, Map.class);
     }
 
@@ -178,5 +191,9 @@ public class JobEsSyncConsumer {
             return ((Number) value).longValue();
         }
         return Long.parseLong(value.toString());
+    }
+
+    private int nextConsumeRetryCount(MqMessageLog record) {
+        return (record.getConsumeRetryCount() == null ? 0 : record.getConsumeRetryCount()) + 1;
     }
 }
