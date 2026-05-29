@@ -141,6 +141,6 @@ public class NotifyMessageConsumer {
             log.error("记录消费失败日志异常: {}", parseException.getMessage());
         }
 
-        channel.basicNack(deliveryTag, false, true);
+        channel.basicNack(deliveryTag, false, false);
     }
 }

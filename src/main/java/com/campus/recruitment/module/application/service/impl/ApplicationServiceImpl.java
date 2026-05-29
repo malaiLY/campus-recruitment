@@ -10,6 +10,7 @@ import com.campus.recruitment.common.enums.JobStatus;
 import com.campus.recruitment.common.enums.UserType;
 import com.campus.recruitment.common.exception.BizException;
 import com.campus.recruitment.common.exception.ErrorCode;
+import com.campus.recruitment.common.mq.OutboxService;
 import com.campus.recruitment.common.result.PageResult;
 import com.campus.recruitment.entity.ApplicationLog;
 import com.campus.recruitment.entity.CompanyProfile;
@@ -54,7 +55,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final StudentProfileMapper studentProfileMapper;
     private final CompanyProfileMapper companyProfileMapper;
     private final MessageMapper messageMapper;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxService outboxService;
 
     private static final Map<String, Set<String>> ALLOWED_TRANSITIONS = new HashMap<>();
 
@@ -133,10 +134,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         log.setCreateTime(LocalDateTime.now());
         applicationLogMapper.insert(log);
 
-        Job updateJob = new Job();
-        updateJob.setId(job.getId());
-        updateJob.setApplyCount(job.getApplyCount() == null ? 1 : job.getApplyCount() + 1);
-        jobMapper.updateById(updateJob);
+        jobMapper.incrementApplyCount(job.getId());
 
         sendDeliveryNotification(application, job);
 
@@ -238,8 +236,9 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .distinct()
                 .collect(Collectors.toList());
 
-        Map<Long, StudentProfile> studentMap = studentProfileMapper.selectBatchIds(studentIds).stream()
-                .collect(Collectors.toMap(StudentProfile::getId, s -> s));
+        Map<Long, StudentProfile> studentMap = studentProfileMapper.selectList(
+                new LambdaQueryWrapper<StudentProfile>().in(StudentProfile::getUserId, studentIds))
+                .stream().collect(Collectors.toMap(StudentProfile::getUserId, s -> s));
 
         Map<Long, Job> jobMap = jobMapper.selectBatchIds(jobIds).stream()
                 .collect(Collectors.toMap(Job::getId, j -> j));
@@ -342,7 +341,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         message.setContent("您已成功投递 " + job.getTitle() + " 职位，请等待企业审核。");
         message.setBusinessType("APPLICATION");
         message.setBusinessId(application.getId());
-        message.setReadStatus(0);
+        message.setReadStatus("UNREAD");
         message.setCreateTime(LocalDateTime.now());
         message.setUpdateTime(LocalDateTime.now());
         messageMapper.insert(message);
@@ -358,11 +357,9 @@ public class ApplicationServiceImpl implements ApplicationService {
                 "businessId", application.getId()
         );
 
-        rabbitTemplate.convertAndSend(
-                RabbitMQConstants.NOTIFY_EXCHANGE,
-                RabbitMQConstants.NOTIFY_ROUTING_KEY,
-                mqMessage
-        );
+        outboxService.sendAfterCommit(RabbitMQConstants.NOTIFY_EXCHANGE,
+                RabbitMQConstants.NOTIFY_ROUTING_KEY, mqMessage,
+                messageId, "NOTIFY", application.getId());
     }
 
     private void sendStatusChangeNotification(JobApplication application, String beforeStatus, String afterStatus, String reason) {
@@ -383,7 +380,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         message.setContent(content);
         message.setBusinessType("APPLICATION");
         message.setBusinessId(application.getId());
-        message.setReadStatus(0);
+        message.setReadStatus("UNREAD");
         message.setCreateTime(LocalDateTime.now());
         message.setUpdateTime(LocalDateTime.now());
         messageMapper.insert(message);
@@ -399,10 +396,8 @@ public class ApplicationServiceImpl implements ApplicationService {
                 "businessId", application.getId()
         );
 
-        rabbitTemplate.convertAndSend(
-                RabbitMQConstants.NOTIFY_EXCHANGE,
-                RabbitMQConstants.NOTIFY_ROUTING_KEY,
-                mqMessage
-        );
+        outboxService.sendAfterCommit(RabbitMQConstants.NOTIFY_EXCHANGE,
+                RabbitMQConstants.NOTIFY_ROUTING_KEY, mqMessage,
+                messageId, "NOTIFY", application.getId());
     }
 }

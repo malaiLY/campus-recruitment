@@ -166,8 +166,9 @@ public class InterviewServiceImpl implements InterviewService {
         List<Long> applicationIds = bookings.stream().map(InterviewBooking::getApplicationId).distinct().collect(Collectors.toList());
         List<Long> jobIds = bookings.stream().map(InterviewBooking::getJobId).distinct().collect(Collectors.toList());
 
-        Map<Long, StudentProfile> studentMap = studentProfileMapper.selectBatchIds(studentIds).stream()
-                .collect(Collectors.toMap(StudentProfile::getUserId, s -> s));
+        Map<Long, StudentProfile> studentMap = studentProfileMapper.selectList(
+                new LambdaQueryWrapper<StudentProfile>().in(StudentProfile::getUserId, studentIds))
+                .stream().collect(Collectors.toMap(StudentProfile::getUserId, s -> s));
         Map<Long, Job> jobMap = jobMapper.selectBatchIds(jobIds).stream()
                 .collect(Collectors.toMap(Job::getId, j -> j));
 
@@ -274,6 +275,12 @@ public class InterviewServiceImpl implements InterviewService {
             booking.setCreateBy(userId);
             booking.setUpdateBy(userId);
             interviewBookingMapper.insert(booking);
+
+            InterviewSlot slotForUpdate = new InterviewSlot();
+            slotForUpdate.setId(request.getSlotId());
+            slotForUpdate.setRemainCount(slot.getRemainCount() - 1);
+            slotForUpdate.setUpdateTime(LocalDateTime.now());
+            interviewSlotMapper.updateById(slotForUpdate);
 
             application.setStatus(ApplicationStatus.BOOKED.name());
             application.setUpdateTime(LocalDateTime.now());

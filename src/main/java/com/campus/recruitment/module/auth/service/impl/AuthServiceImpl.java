@@ -27,7 +27,6 @@ import com.campus.recruitment.module.auth.vo.RegisterVO;
 import com.campus.recruitment.module.auth.vo.TokenRefreshVO;
 import com.campus.recruitment.module.auth.vo.UserInfoVO;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -269,7 +268,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String generateJwtToken(Long userId, String username, String userType) {
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtTtlHours * 3600 * 1000L);
 

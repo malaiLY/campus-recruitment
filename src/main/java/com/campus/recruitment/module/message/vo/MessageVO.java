@@ -13,6 +13,6 @@ public class MessageVO {
     private String content;
     private String businessType;
     private Long businessId;
-    private Integer readStatus;
+    private String readStatus;
     private LocalDateTime createTime;
 }

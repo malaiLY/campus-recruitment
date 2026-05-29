@@ -41,7 +41,10 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue jobEsQueue() {
-        return QueueBuilder.durable(RabbitMQConstants.JOB_ES_QUEUE).build();
+        return QueueBuilder.durable(RabbitMQConstants.JOB_ES_QUEUE)
+                .withArgument("x-dead-letter-exchange", RabbitMQConstants.JOB_ES_DLX_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", RabbitMQConstants.JOB_ES_DLX_ROUTING_KEY)
+                .build();
     }
 
     @Bean
@@ -49,6 +52,40 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(jobEsQueue())
                 .to(jobEsExchange())
                 .with(RabbitMQConstants.JOB_ES_ROUTING_KEY);
+    }
+
+    @Bean
+    public DirectExchange notifyDlxExchange() {
+        return new DirectExchange(RabbitMQConstants.NOTIFY_DLX_EXCHANGE);
+    }
+
+    @Bean
+    public Queue notifyDlq() {
+        return QueueBuilder.durable(RabbitMQConstants.NOTIFY_DLQ).build();
+    }
+
+    @Bean
+    public Binding notifyDlqBinding() {
+        return BindingBuilder.bind(notifyDlq())
+                .to(notifyDlxExchange())
+                .with(RabbitMQConstants.NOTIFY_DLX_ROUTING_KEY);
+    }
+
+    @Bean
+    public DirectExchange jobEsDlxExchange() {
+        return new DirectExchange(RabbitMQConstants.JOB_ES_DLX_EXCHANGE);
+    }
+
+    @Bean
+    public Queue jobEsDlq() {
+        return QueueBuilder.durable(RabbitMQConstants.JOB_ES_DLQ).build();
+    }
+
+    @Bean
+    public Binding jobEsDlqBinding() {
+        return BindingBuilder.bind(jobEsDlq())
+                .to(jobEsDlxExchange())
+                .with(RabbitMQConstants.JOB_ES_DLX_ROUTING_KEY);
     }
 
     @Bean

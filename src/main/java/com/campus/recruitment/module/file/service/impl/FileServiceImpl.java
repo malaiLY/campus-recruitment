@@ -90,7 +90,7 @@ public class FileServiceImpl implements FileService {
         vo.setOriginalName(fileObject.getOriginalName());
         vo.setFileSize(fileObject.getFileSize());
         vo.setFileExt(fileObject.getFileExt());
-        vo.setAccessUrl(getAccessUrl(bucketName, objectName));
+        vo.setAccessUrl(getAccessUrl(fileObject.getId()));
         return vo;
     }
 
@@ -114,7 +114,7 @@ public class FileServiceImpl implements FileService {
                     .method(Method.GET)
                     .bucket(fileObject.getBucketName())
                     .object(fileObject.getObjectName())
-                    .expiry(7 * 24 * 60 * 60)
+                    .expiry(60 * 60)
                     .build()
             );
         } catch (Exception e) {
@@ -138,6 +138,22 @@ public class FileServiceImpl implements FileService {
         if (!allowedExtensions.contains(fileExt.toLowerCase())) {
             throw new BizException(ErrorCode.FILE_TYPE_NOT_ALLOWED, "不支持的文件类型: " + fileExt);
         }
+
+        String contentType = file.getContentType();
+        if (contentType != null && !isContentTypeConsistent(contentType, fileExt)) {
+            throw new BizException(ErrorCode.FILE_TYPE_NOT_ALLOWED, "文件内容与扩展名不匹配");
+        }
+    }
+
+    private boolean isContentTypeConsistent(String contentType, String fileExt) {
+        return switch (fileExt) {
+            case "pdf" -> contentType.equals("application/pdf");
+            case "doc" -> contentType.equals("application/msword");
+            case "docx" -> contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            case "jpg", "jpeg" -> contentType.equals("image/jpeg");
+            case "png" -> contentType.equals("image/png");
+            default -> true;
+        };
     }
 
     private String getFileExtension(String filename) {
@@ -173,7 +189,7 @@ public class FileServiceImpl implements FileService {
         };
     }
 
-    private String getAccessUrl(String bucketName, String objectName) {
-        return "/api/files/" + bucketName + "/" + objectName;
+    private String getAccessUrl(Long fileId) {
+        return "/api/files/" + fileId + "/download";
     }
 }

@@ -18,13 +18,17 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final AuthInterceptor authInterceptor;
     private final PermissionInterceptor permissionInterceptor;
 
-    @Value("#{'${app.security.exclude-paths}'.split(',')}")
-    private List<String> excludePaths;
+    @Value("${app.security.exclude-paths}")
+    private String excludePathsConfig;
+
+    @Value("${app.security.cors-allowed-origins:http://localhost:3000,http://localhost:5173}")
+    private String corsAllowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] allowedOrigins = corsAllowedOrigins.split(",");
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
@@ -33,12 +37,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        String[] paths = excludePathsConfig.split(",");
+
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns(excludePaths);
+                .excludePathPatterns(paths);
 
         registry.addInterceptor(permissionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns(excludePaths);
+                .excludePathPatterns(paths);
     }
 }

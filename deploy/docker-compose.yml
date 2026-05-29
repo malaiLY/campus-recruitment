@@ -5,13 +5,13 @@ services:
     image: mysql:8.0
     container_name: campus-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: campus_recruitment
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ../sql/V001__初始化数据库结构.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../campus-recruitment-plan/校园招聘数据库设计包/V001__初始化数据库结构.sql:/docker-entrypoint-initdb.d/init.sql:ro
     command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
     networks:
       - campus-network

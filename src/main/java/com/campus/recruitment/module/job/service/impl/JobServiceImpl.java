@@ -86,14 +86,29 @@ public class JobServiceImpl implements JobService {
         Page<Job> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
         jobMapper.selectPage(page, queryWrapper);
 
-        List<JobVO> voList = page.getRecords().stream().map(job -> {
+        List<Job> jobs = page.getRecords();
+        if (jobs.isEmpty()) {
+            return new PageResult<>(List.of(), 0, queryDTO.getPageNum(), queryDTO.getPageSize());
+        }
+
+        List<Long> companyIds = jobs.stream().map(Job::getCompanyId).distinct().collect(Collectors.toList());
+        List<Long> jobIds = jobs.stream().map(Job::getId).collect(Collectors.toList());
+
+        Map<Long, CompanyProfile> companyMap = companyProfileMapper.selectBatchIds(companyIds).stream()
+                .collect(Collectors.toMap(CompanyProfile::getId, c -> c));
+
+        Map<Long, List<JobTag>> tagMap = jobTagMapper.selectList(
+                new LambdaQueryWrapper<JobTag>().in(JobTag::getJobId, jobIds))
+                .stream().collect(Collectors.groupingBy(JobTag::getJobId));
+
+        List<JobVO> voList = jobs.stream().map(job -> {
             JobVO vo = convertToJobVO(job);
-            CompanyProfile company = companyProfileMapper.selectOne(
-                    new LambdaQueryWrapper<CompanyProfile>().eq(CompanyProfile::getId, job.getCompanyId()));
+            CompanyProfile company = companyMap.get(job.getCompanyId());
             if (company != null) {
                 vo.setCompanyName(company.getCompanyName());
             }
-            vo.setTags(getTagsByJobId(job.getId()));
+            List<JobTag> tags = tagMap.get(job.getId());
+            vo.setTags(tags != null ? tags.stream().map(JobTag::getTagName).collect(Collectors.toList()) : List.of());
             return vo;
         }).collect(Collectors.toList());
 
@@ -107,8 +122,8 @@ public class JobServiceImpl implements JobService {
             throw new BizException(ErrorCode.JOB_NOT_EXIST);
         }
 
-        job.setViewCount(job.getViewCount() + 1);
-        jobMapper.updateById(job);
+        jobMapper.incrementViewCount(id);
+        job = jobMapper.selectById(id);
 
         JobDetailVO vo = convertToJobDetailVO(job);
 
@@ -244,8 +259,7 @@ public class JobServiceImpl implements JobService {
         favorite.setCreateTime(LocalDateTime.now());
         jobFavoriteMapper.insert(favorite);
 
-        job.setFavoriteCount(job.getFavoriteCount() + 1);
-        jobMapper.updateById(job);
+        jobMapper.incrementFavoriteCount(jobId);
     }
 
     @Override
@@ -263,9 +277,8 @@ public class JobServiceImpl implements JobService {
                         .eq(JobFavorite::getStudentId, userId)
                         .eq(JobFavorite::getJobId, jobId));
 
-        if (deleted > 0 && job.getFavoriteCount() > 0) {
-            job.setFavoriteCount(job.getFavoriteCount() - 1);
-            jobMapper.updateById(job);
+        if (deleted > 0) {
+            jobMapper.decrementFavoriteCount(jobId);
         }
     }
 
@@ -290,10 +303,21 @@ public class JobServiceImpl implements JobService {
         Page<Job> page = new Page<>(pageNum, pageSize);
         jobMapper.selectPage(page, queryWrapper);
 
-        List<JobVO> voList = page.getRecords().stream().map(job -> {
+        List<Job> jobs = page.getRecords();
+        if (jobs.isEmpty()) {
+            return new PageResult<>(new ArrayList<>(), 0, pageNum, pageSize);
+        }
+
+        List<Long> jobIds = jobs.stream().map(Job::getId).collect(Collectors.toList());
+        Map<Long, List<JobTag>> tagMap = jobTagMapper.selectList(
+                new LambdaQueryWrapper<JobTag>().in(JobTag::getJobId, jobIds))
+                .stream().collect(Collectors.groupingBy(JobTag::getJobId));
+
+        List<JobVO> voList = jobs.stream().map(job -> {
             JobVO vo = convertToJobVO(job);
             vo.setCompanyName(company.getCompanyName());
-            vo.setTags(getTagsByJobId(job.getId()));
+            List<JobTag> tags = tagMap.get(job.getId());
+            vo.setTags(tags != null ? tags.stream().map(JobTag::getTagName).collect(Collectors.toList()) : List.of());
             return vo;
         }).collect(Collectors.toList());
 

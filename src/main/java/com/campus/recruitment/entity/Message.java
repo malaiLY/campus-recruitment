@@ -38,7 +38,7 @@ public class Message {
     private Long businessId;
 
     @TableField("read_status")
-    private Integer readStatus;
+    private String readStatus;
 
     @TableField("read_time")
     private LocalDateTime readTime;

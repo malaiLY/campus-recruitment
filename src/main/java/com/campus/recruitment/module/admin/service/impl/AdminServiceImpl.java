@@ -8,6 +8,7 @@ import com.campus.recruitment.common.enums.UserStatus;
 import com.campus.recruitment.common.exception.BizException;
 import com.campus.recruitment.common.exception.ErrorCode;
 import com.campus.recruitment.common.constant.RabbitMQConstants;
+import com.campus.recruitment.common.mq.OutboxService;
 import com.campus.recruitment.common.result.PageResult;
 import com.campus.recruitment.entity.CompanyAudit;
 import com.campus.recruitment.entity.CompanyProfile;
@@ -29,7 +30,6 @@ import com.campus.recruitment.module.admin.service.AdminService;
 import com.campus.recruitment.module.admin.vo.DashboardVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
     private final OperationLogMapper operationLogMapper;
     private final LoginLogMapper loginLogMapper;
     private final MessageMapper messageMapper;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxService outboxService;
 
     @Override
     public DashboardVO getDashboard() {
@@ -238,23 +238,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void syncJobToEs(Long jobId) {
-        try {
-            String messageId = UUID.randomUUID().toString();
-            Map<String, Object> message = Map.of(
-                    "messageId", messageId,
-                    "action", "save",
-                    "jobId", jobId
-            );
+        String messageId = UUID.randomUUID().toString();
+        Map<String, Object> message = Map.of(
+                "messageId", messageId,
+                "action", "save",
+                "jobId", jobId
+        );
 
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConstants.JOB_ES_EXCHANGE,
-                    RabbitMQConstants.JOB_ES_ROUTING_KEY,
-                    message
-            );
-            log.info("发送岗位ES同步MQ消息: messageId={}, jobId={}, action=save", messageId, jobId);
-        } catch (Exception e) {
-            log.error("发送岗位ES同步MQ消息失败: {}", e.getMessage(), e);
-        }
+        outboxService.sendAfterCommit(RabbitMQConstants.JOB_ES_EXCHANGE,
+                RabbitMQConstants.JOB_ES_ROUTING_KEY, message,
+                messageId, "JOB_ES_SYNC", jobId);
     }
 
     private void sendAuditNotification(Long userId, String title, String content, String businessType, Long businessId) {
@@ -269,7 +262,7 @@ public class AdminServiceImpl implements AdminService {
         message.setContent(content);
         message.setBusinessType(businessType);
         message.setBusinessId(businessId);
-        message.setReadStatus(0);
+        message.setReadStatus("UNREAD");
         message.setCreateTime(LocalDateTime.now());
         message.setUpdateTime(LocalDateTime.now());
         message.setDeleted(0);
@@ -286,10 +279,8 @@ public class AdminServiceImpl implements AdminService {
                 "businessId", businessId
         );
 
-        rabbitTemplate.convertAndSend(
-                RabbitMQConstants.NOTIFY_EXCHANGE,
-                RabbitMQConstants.NOTIFY_ROUTING_KEY,
-                mqMessage
-        );
+        outboxService.sendAfterCommit(RabbitMQConstants.NOTIFY_EXCHANGE,
+                RabbitMQConstants.NOTIFY_ROUTING_KEY, mqMessage,
+                messageId, "NOTIFY", businessId);
     }
 }

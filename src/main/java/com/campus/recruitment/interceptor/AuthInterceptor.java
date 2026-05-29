@@ -9,7 +9,7 @@ import com.campus.recruitment.common.result.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
+
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,6 +63,11 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        if (!validateJwtToken(token)) {
+            sendUnauthorized(response, "Token无效或已过期");
+            return false;
+        }
+
         String tokenKey = RedisConstants.LOGIN_TOKEN_PREFIX + token;
         String userIdStr = stringRedisTemplate.opsForValue().get(tokenKey);
         if (userIdStr == null) {
@@ -72,8 +77,16 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         Long userId = Long.parseLong(userIdStr);
         String usernameKey = "campus:login:user:" + userId;
-        String username = stringRedisTemplate.opsForHash().get(usernameKey, "username").toString();
-        String userType = stringRedisTemplate.opsForHash().get(usernameKey, "userType").toString();
+        Object usernameObj = stringRedisTemplate.opsForHash().get(usernameKey, "username");
+        Object userTypeObj = stringRedisTemplate.opsForHash().get(usernameKey, "userType");
+
+        if (usernameObj == null || userTypeObj == null) {
+            sendUnauthorized(response, "登录信息不完整，请重新登录");
+            return false;
+        }
+
+        String username = usernameObj.toString();
+        String userType = userTypeObj.toString();
 
         LoginUserContext.LoginUser loginUser = new LoginUserContext.LoginUser();
         loginUser.setUserId(userId);
@@ -88,9 +101,28 @@ public class AuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    private boolean validateJwtToken(String token) {
+        try {
+            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            if (claims.getExpiration().before(new Date())) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.debug("JWT Token验证失败: {}", e.getMessage());
+            return false;
+        }
+    }
+
     private void checkAndSetRefreshHeader(String token, HttpServletResponse response) {
         try {
-            SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
@@ -124,15 +156,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                 }
             }
         }
-        String paramToken = request.getParameter("token");
-        if (paramToken != null) {
-            return paramToken;
-        }
         return null;
     }
 
     private void sendUnauthorized(HttpServletResponse response, String message) throws Exception {
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(R.fail(ErrorCode.UNAUTHORIZED.getCode(), message)));

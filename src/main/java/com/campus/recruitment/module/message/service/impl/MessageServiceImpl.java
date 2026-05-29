@@ -64,7 +64,7 @@ public class MessageServiceImpl implements MessageService {
 
         LambdaUpdateWrapper<Message> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Message::getId, messageId)
-                .set(Message::getReadStatus, 1)
+                .set(Message::getReadStatus, "READ")
                 .set(Message::getReadTime, LocalDateTime.now())
                 .set(Message::getUpdateTime, LocalDateTime.now());
         messageMapper.update(null, updateWrapper);
@@ -92,7 +92,7 @@ public class MessageServiceImpl implements MessageService {
 
         LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Message::getReceiverId, userId)
-                .eq(Message::getReadStatus, 0);
+                .eq(Message::getReadStatus, "UNREAD");
         Long count = messageMapper.selectCount(queryWrapper);
 
         return new UnreadCountVO(count);
@@ -117,7 +117,7 @@ public class MessageServiceImpl implements MessageService {
         message.setContent(content);
         message.setBusinessType(businessType);
         message.setBusinessId(businessId);
-        message.setReadStatus(0);
+        message.setReadStatus("UNREAD");
         message.setCreateTime(LocalDateTime.now());
         message.setUpdateTime(LocalDateTime.now());
         message.setDeleted(0);
