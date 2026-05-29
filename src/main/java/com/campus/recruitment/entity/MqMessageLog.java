@@ -23,6 +23,9 @@ public class MqMessageLog {
     @TableField("business_id")
     private Long businessId;
 
+    @TableField("send_status")
+    private String sendStatus;
+
     @TableField("consume_status")
     private String consumeStatus;
 

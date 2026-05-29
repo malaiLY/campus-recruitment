@@ -42,7 +42,7 @@ public class NotifyMessageConsumer {
                     new LambdaQueryWrapper<MqMessageLog>()
                             .eq(MqMessageLog::getMessageId, messageId));
 
-            if (existingLog != null && "SUCCESS".equals(existingLog.getConsumeStatus())) {
+            if (existingLog != null && "CONSUMED".equals(existingLog.getConsumeStatus())) {
                 log.info("消息已消费，跳过: messageId={}", messageId);
                 channel.basicAck(deliveryTag, false);
                 return;
@@ -60,19 +60,17 @@ public class NotifyMessageConsumer {
                     title, content, businessType, businessId);
 
             if (existingLog != null) {
-                MqMessageLog updateRecord = new MqMessageLog();
-                updateRecord.setId(existingLog.getId());
-                updateRecord.setConsumeStatus("SUCCESS");
-                updateRecord.setConsumeTime(LocalDateTime.now());
-                updateRecord.setRetryCount(0);
-                updateRecord.setUpdateTime(LocalDateTime.now());
-                mqMessageLogMapper.updateById(updateRecord);
+                existingLog.setConsumeStatus("CONSUMED");
+                existingLog.setConsumeTime(LocalDateTime.now());
+                existingLog.setRetryCount(0);
+                existingLog.setUpdateTime(LocalDateTime.now());
+                mqMessageLogMapper.updateById(existingLog);
             } else {
                 MqMessageLog logRecord = new MqMessageLog();
                 logRecord.setMessageId(messageId);
                 logRecord.setMessageType(messageType);
                 logRecord.setBusinessId(businessId);
-                logRecord.setConsumeStatus("SUCCESS");
+                logRecord.setConsumeStatus("CONSUMED");
                 logRecord.setConsumeTime(LocalDateTime.now());
                 logRecord.setRetryCount(0);
                 logRecord.setCreateTime(LocalDateTime.now());
@@ -109,6 +107,7 @@ public class NotifyMessageConsumer {
     }
 
     private void handleConsumeError(Message message, Channel channel, long deliveryTag, Exception e) throws IOException {
+        int retryCount = 0;
         try {
             Map<String, Object> notifyMessage = parseMessage(message);
             String messageId = (String) notifyMessage.get("messageId");
@@ -124,23 +123,29 @@ public class NotifyMessageConsumer {
                 logRecord.setMessageId(messageId);
                 logRecord.setMessageType(messageType);
                 logRecord.setBusinessId(businessId);
-                logRecord.setConsumeStatus("FAIL");
+                logRecord.setConsumeStatus("CONSUME_FAILED");
                 logRecord.setErrorMessage(e.getMessage());
                 logRecord.setRetryCount(1);
                 logRecord.setCreateTime(LocalDateTime.now());
                 logRecord.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.insert(logRecord);
+                retryCount = 1;
             } else {
-                logRecord.setConsumeStatus("FAIL");
+                logRecord.setConsumeStatus("CONSUME_FAILED");
                 logRecord.setErrorMessage(e.getMessage());
                 logRecord.setRetryCount(logRecord.getRetryCount() + 1);
                 logRecord.setUpdateTime(LocalDateTime.now());
                 mqMessageLogMapper.updateById(logRecord);
+                retryCount = logRecord.getRetryCount();
             }
         } catch (Exception parseException) {
             log.error("记录消费失败日志异常: {}", parseException.getMessage());
         }
 
-        channel.basicNack(deliveryTag, false, false);
+        if (retryCount < 3) {
+            channel.basicNack(deliveryTag, false, true);
+        } else {
+            channel.basicNack(deliveryTag, false, false);
+        }
     }
 }

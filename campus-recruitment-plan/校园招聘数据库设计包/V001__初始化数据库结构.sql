@@ -431,8 +431,14 @@ CREATE TABLE interview_booking (
   deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除',
   remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (id),
-  UNIQUE KEY uk_booking_slot_student (slot_id, student_id),
-  UNIQUE KEY uk_booking_application (application_id),
+  active_slot_student VARCHAR(128) GENERATED ALWAYS AS (
+    CASE WHEN status = 'BOOKED' THEN CONCAT(slot_id, '-', student_id) ELSE NULL END
+  ) STORED,
+  active_application_id BIGINT UNSIGNED GENERATED ALWAYS AS (
+    CASE WHEN status = 'BOOKED' THEN application_id ELSE NULL END
+  ) STORED,
+  UNIQUE KEY uk_active_booking_slot_student (active_slot_student),
+  UNIQUE KEY uk_active_booking_application (active_application_id),
   KEY idx_booking_student_status (student_id, status),
   KEY idx_booking_company_status (company_id, status),
   KEY idx_booking_job_status (job_id, status),
@@ -470,7 +476,8 @@ CREATE TABLE mq_message_log (
   message_id VARCHAR(128) NOT NULL COMMENT '消息唯一ID',
   message_type VARCHAR(64) NOT NULL COMMENT '消息类型',
   business_id BIGINT UNSIGNED DEFAULT NULL COMMENT '业务ID',
-  consume_status VARCHAR(32) NOT NULL DEFAULT 'INIT' COMMENT '消费状态：INIT/SUCCESS/FAIL',
+  send_status VARCHAR(32) DEFAULT NULL COMMENT '生产侧发送状态：SENDING/SENT/SEND_FAILED',
+  consume_status VARCHAR(32) NOT NULL DEFAULT 'INIT' COMMENT '消费侧状态：INIT/CONSUMED/CONSUME_FAILED',
   retry_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '重试次数',
   error_message TEXT DEFAULT NULL COMMENT '错误信息',
   consume_time DATETIME(3) DEFAULT NULL COMMENT '消费时间',

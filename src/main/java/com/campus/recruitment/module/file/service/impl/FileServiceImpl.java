@@ -140,7 +140,7 @@ public class FileServiceImpl implements FileService {
         }
 
         String contentType = file.getContentType();
-        if (contentType != null && !isContentTypeConsistent(contentType, fileExt)) {
+        if (contentType == null || !isContentTypeConsistent(contentType, fileExt)) {
             throw new BizException(ErrorCode.FILE_TYPE_NOT_ALLOWED, "文件内容与扩展名不匹配");
         }
     }

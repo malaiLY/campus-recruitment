@@ -31,7 +31,7 @@ import com.campus.recruitment.module.interview.vo.InterviewSlotVO;
 import com.campus.recruitment.module.interview.vo.MyBookingVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.campus.recruitment.common.mq.OutboxService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -57,7 +57,7 @@ public class InterviewServiceImpl implements InterviewService {
     private final StudentProfileMapper studentProfileMapper;
     private final StringRedisTemplate stringRedisTemplate;
     private final DefaultRedisScript<Long> interviewBookingScript;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxService outboxService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -245,6 +245,11 @@ public class InterviewServiceImpl implements InterviewService {
             throw new BizException(ErrorCode.INTERVIEW_EXPIRED);
         }
 
+        if (!slot.getJobId().equals(application.getJobId())
+                || !slot.getCompanyId().equals(application.getCompanyId())) {
+            throw new BizException(ErrorCode.FORBIDDEN, "面试场次与投递记录不匹配");
+        }
+
         String stockKey = RedisConstants.INTERVIEW_SLOT_STOCK_PREFIX + request.getSlotId();
         String userBookingKey = RedisConstants.INTERVIEW_BOOKING_USER_PREFIX + request.getSlotId() + ":" + userId;
 
@@ -276,11 +281,10 @@ public class InterviewServiceImpl implements InterviewService {
             booking.setUpdateBy(userId);
             interviewBookingMapper.insert(booking);
 
-            InterviewSlot slotForUpdate = new InterviewSlot();
-            slotForUpdate.setId(request.getSlotId());
-            slotForUpdate.setRemainCount(slot.getRemainCount() - 1);
-            slotForUpdate.setUpdateTime(LocalDateTime.now());
-            interviewSlotMapper.updateById(slotForUpdate);
+            int updated = interviewSlotMapper.decrementRemainCount(request.getSlotId());
+            if (updated == 0) {
+                throw new BizException(ErrorCode.INTERVIEW_FULL);
+            }
 
             application.setStatus(ApplicationStatus.BOOKED.name());
             application.setUpdateTime(LocalDateTime.now());
@@ -322,10 +326,8 @@ public class InterviewServiceImpl implements InterviewService {
         stringRedisTemplate.delete(userBookingKey);
 
         InterviewSlot slot = interviewSlotMapper.selectById(booking.getSlotId());
-        if (slot != null && slot.getRemainCount() != null) {
-            slot.setRemainCount(slot.getRemainCount() + 1);
-            slot.setUpdateTime(LocalDateTime.now());
-            interviewSlotMapper.updateById(slot);
+        if (slot != null) {
+            interviewSlotMapper.incrementRemainCount(booking.getSlotId());
         }
 
         JobApplication application = jobApplicationMapper.selectById(booking.getApplicationId());
@@ -431,26 +433,21 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     private void sendBookingNotification(Long studentId, InterviewSlot slot, JobApplication application) {
-        try {
-            String messageId = java.util.UUID.randomUUID().toString();
-            Map<String, Object> mqMessage = Map.of(
-                    "messageId", messageId,
-                    "receiverId", studentId,
-                    "senderId", application.getCompanyId(),
-                    "messageType", "INTERVIEW",
-                    "title", "面试预约成功",
-                    "content", "您已成功预约面试时间段: " + slot.getStartTime() + " 至 " + slot.getEndTime(),
-                    "businessType", "INTERVIEW",
-                    "businessId", application.getId()
-            );
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConstants.NOTIFY_EXCHANGE,
-                    RabbitMQConstants.NOTIFY_ROUTING_KEY,
-                    mqMessage
-            );
-            log.info("发送面试预约通知MQ消息: messageId={}, studentId={}", messageId, studentId);
-        } catch (Exception e) {
-            log.error("发送面试预约通知MQ消息失败: {}", e.getMessage(), e);
-        }
+        String messageId = java.util.UUID.randomUUID().toString();
+        Map<String, Object> mqMessage = Map.of(
+                "messageId", messageId,
+                "receiverId", studentId,
+                "senderId", application.getCompanyId(),
+                "messageType", "INTERVIEW",
+                "title", "面试预约成功",
+                "content", "您已成功预约面试时间段: " + slot.getStartTime() + " 至 " + slot.getEndTime(),
+                "businessType", "INTERVIEW",
+                "businessId", application.getId()
+        );
+        outboxService.sendAfterCommit(
+                RabbitMQConstants.NOTIFY_EXCHANGE,
+                RabbitMQConstants.NOTIFY_ROUTING_KEY,
+                mqMessage, messageId, "INTERVIEW", application.getId());
+        log.info("发送面试预约通知MQ消息(Outbox): messageId={}, studentId={}", messageId, studentId);
     }
 }

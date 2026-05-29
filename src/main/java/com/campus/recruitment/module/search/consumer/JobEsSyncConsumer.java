@@ -50,7 +50,7 @@ public class JobEsSyncConsumer {
                         new LambdaQueryWrapper<MqMessageLog>()
                                 .eq(MqMessageLog::getMessageId, messageId));
 
-                if (existingLog != null && "SUCCESS".equals(existingLog.getConsumeStatus())) {
+                if (existingLog != null && "CONSUMED".equals(existingLog.getConsumeStatus())) {
                     log.info("ES同步消息已消费，跳过: messageId={}, action={}, jobId={}", messageId, action, jobId);
                     channel.basicAck(deliveryTag, false);
                     return;
@@ -83,16 +83,27 @@ public class JobEsSyncConsumer {
             }
 
             if (messageId != null) {
-                MqMessageLog logRecord = new MqMessageLog();
-                logRecord.setMessageId(messageId);
-                logRecord.setMessageType("JOB_ES_SYNC");
-                logRecord.setBusinessId(jobId);
-                logRecord.setConsumeStatus("SUCCESS");
-                logRecord.setConsumeTime(LocalDateTime.now());
-                logRecord.setRetryCount(0);
-                logRecord.setCreateTime(LocalDateTime.now());
-                logRecord.setUpdateTime(LocalDateTime.now());
-                mqMessageLogMapper.insert(logRecord);
+                MqMessageLog existingForUpdate = mqMessageLogMapper.selectOne(
+                        new LambdaQueryWrapper<MqMessageLog>()
+                                .eq(MqMessageLog::getMessageId, messageId));
+                if (existingForUpdate != null) {
+                    existingForUpdate.setConsumeStatus("CONSUMED");
+                    existingForUpdate.setConsumeTime(LocalDateTime.now());
+                    existingForUpdate.setRetryCount(0);
+                    existingForUpdate.setUpdateTime(LocalDateTime.now());
+                    mqMessageLogMapper.updateById(existingForUpdate);
+                } else {
+                    MqMessageLog logRecord = new MqMessageLog();
+                    logRecord.setMessageId(messageId);
+                    logRecord.setMessageType("JOB_ES_SYNC");
+                    logRecord.setBusinessId(jobId);
+                    logRecord.setConsumeStatus("CONSUMED");
+                    logRecord.setConsumeTime(LocalDateTime.now());
+                    logRecord.setRetryCount(0);
+                    logRecord.setCreateTime(LocalDateTime.now());
+                    logRecord.setUpdateTime(LocalDateTime.now());
+                    mqMessageLogMapper.insert(logRecord);
+                }
             }
 
             channel.basicAck(deliveryTag, false);
@@ -105,6 +116,7 @@ public class JobEsSyncConsumer {
     }
 
     private void handleConsumeError(Message message, Channel channel, long deliveryTag, Exception e) throws IOException {
+        int retryCount = 0;
         try {
             Map<String, Object> body = parseMessage(message);
             String messageId = (String) body.get("messageId");
@@ -121,25 +133,31 @@ public class JobEsSyncConsumer {
                     logRecord.setMessageId(messageId);
                     logRecord.setMessageType("JOB_ES_SYNC");
                     logRecord.setBusinessId(jobId);
-                    logRecord.setConsumeStatus("FAIL");
+                    logRecord.setConsumeStatus("CONSUME_FAILED");
                     logRecord.setErrorMessage(e.getMessage());
                     logRecord.setRetryCount(1);
                     logRecord.setCreateTime(LocalDateTime.now());
                     logRecord.setUpdateTime(LocalDateTime.now());
                     mqMessageLogMapper.insert(logRecord);
+                    retryCount = 1;
                 } else {
-                    logRecord.setConsumeStatus("FAIL");
+                    logRecord.setConsumeStatus("CONSUME_FAILED");
                     logRecord.setErrorMessage(e.getMessage());
                     logRecord.setRetryCount(logRecord.getRetryCount() + 1);
                     logRecord.setUpdateTime(LocalDateTime.now());
                     mqMessageLogMapper.updateById(logRecord);
+                    retryCount = logRecord.getRetryCount();
                 }
             }
         } catch (Exception parseException) {
             log.error("记录ES同步消费失败日志异常: {}", parseException.getMessage());
         }
 
-        channel.basicNack(deliveryTag, false, false);
+        if (retryCount < 3) {
+            channel.basicNack(deliveryTag, false, true);
+        } else {
+            channel.basicNack(deliveryTag, false, false);
+        }
     }
 
     @SuppressWarnings("unchecked")

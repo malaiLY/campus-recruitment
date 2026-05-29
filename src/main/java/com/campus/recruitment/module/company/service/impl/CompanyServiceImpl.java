@@ -7,8 +7,10 @@ import com.campus.recruitment.common.exception.BizException;
 import com.campus.recruitment.common.exception.ErrorCode;
 import com.campus.recruitment.entity.CompanyAudit;
 import com.campus.recruitment.entity.CompanyProfile;
+import com.campus.recruitment.entity.FileObject;
 import com.campus.recruitment.mapper.CompanyAuditMapper;
 import com.campus.recruitment.mapper.CompanyProfileMapper;
+import com.campus.recruitment.mapper.FileObjectMapper;
 import com.campus.recruitment.module.company.dto.CompanyCertificationDTO;
 import com.campus.recruitment.module.company.dto.CompanyProfileDTO;
 import com.campus.recruitment.module.company.service.CompanyService;
@@ -27,6 +29,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyProfileMapper companyProfileMapper;
     private final CompanyAuditMapper companyAuditMapper;
+    private final FileObjectMapper fileObjectMapper;
 
     @Override
     public CompanyProfileVO getProfile() {
@@ -84,6 +87,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Long userId = LoginUserContext.getUserId();
+        validateLicenseFile(dto.getLicenseFileId(), userId);
         CompanyProfile profile = companyProfileMapper.selectOne(
                 new LambdaQueryWrapper<CompanyProfile>().eq(CompanyProfile::getUserId, userId));
 
@@ -112,6 +116,16 @@ public class CompanyServiceImpl implements CompanyService {
         audit.setAuditTime(null);
         audit.setCreateTime(LocalDateTime.now());
         companyAuditMapper.insert(audit);
+    }
+
+    private void validateLicenseFile(Long licenseFileId, Long userId) {
+        FileObject file = fileObjectMapper.selectById(licenseFileId);
+        if (file == null
+                || !file.getOwnerId().equals(userId)
+                || !"LICENSE".equals(file.getBizType())
+                || !"NORMAL".equals(file.getStatus())) {
+            throw new BizException(ErrorCode.FORBIDDEN, "营业执照文件无效");
+        }
     }
 
     @Override

@@ -42,7 +42,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         String requiredPerm = requirePermission.value();
         LoginUserContext.LoginUser user = LoginUserContext.get();
         if (user == null) {
-            sendForbidden(response, "未登录");
+            sendUnauthorized(response, "未登录");
             return false;
         }
 
@@ -61,9 +61,16 @@ public class PermissionInterceptor implements HandlerInterceptor {
     }
 
     private void sendForbidden(HttpServletResponse response, String message) throws Exception {
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(R.fail(ErrorCode.FORBIDDEN.getCode(), message)));
+    }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) throws Exception {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.getWriter().write(objectMapper.writeValueAsString(R.fail(ErrorCode.UNAUTHORIZED.getCode(), message)));
     }
 }
