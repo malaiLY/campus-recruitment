@@ -22,8 +22,8 @@ public class RabbitMQConfig {
     @Bean
     public Queue notifyQueue() {
         return QueueBuilder.durable(RabbitMQConstants.NOTIFY_QUEUE)
-                .withArgument("x-dead-letter-exchange", RabbitMQConstants.NOTIFY_EXCHANGE + ".dlx")
-                .withArgument("x-dead-letter-routing-key", "campus.notify.dlx")
+                .withArgument("x-dead-letter-exchange", RabbitMQConstants.NOTIFY_DLX_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", RabbitMQConstants.NOTIFY_DLX_ROUTING_KEY)
                 .build();
     }
 

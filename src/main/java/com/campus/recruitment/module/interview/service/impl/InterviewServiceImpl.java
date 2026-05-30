@@ -35,9 +35,11 @@ import com.campus.recruitment.common.mq.OutboxService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -253,18 +255,30 @@ public class InterviewServiceImpl implements InterviewService {
 
         String stockKey = RedisConstants.INTERVIEW_SLOT_STOCK_PREFIX + request.getSlotId();
         String userBookingKey = RedisConstants.INTERVIEW_BOOKING_USER_PREFIX + request.getSlotId() + ":" + userId;
+        ensureSlotStockKey(slot, stockKey);
+        long bookingKeyTtlSeconds = resolveBookingUserKeyTtlSeconds(slot);
 
         Long result = stringRedisTemplate.execute(
                 interviewBookingScript,
                 List.of(stockKey, userBookingKey),
                 String.valueOf(userId),
-                String.valueOf(RedisConstants.INTERVIEW_BOOKING_TTL_SECONDS));
+                String.valueOf(bookingKeyTtlSeconds));
 
-        if (result == -2) {
+        if (result == null) {
+            log.error("Interview booking script returned null: slotId={}, applicationId={}, userId={}",
+                    request.getSlotId(), request.getApplicationId(), userId);
+            throw new BizException(ErrorCode.SYSTEM_ERROR, "预约系统繁忙，请稍后重试");
+        }
+        if (result == -2L) {
             throw new BizException(ErrorCode.INTERVIEW_DUPLICATE);
         }
-        if (result == -1) {
+        if (result == -1L) {
             throw new BizException(ErrorCode.INTERVIEW_FULL);
+        }
+        if (result < 0L) {
+            log.error("Interview booking script returned unexpected code: result={}, slotId={}, applicationId={}, userId={}",
+                    result, request.getSlotId(), request.getApplicationId(), userId);
+            throw new BizException(ErrorCode.SYSTEM_ERROR, "预约系统异常，请稍后重试");
         }
 
         try {
@@ -292,9 +306,23 @@ public class InterviewServiceImpl implements InterviewService {
             jobApplicationMapper.updateById(application);
 
             sendBookingNotification(userId, slot, application);
+        } catch (DuplicateKeyException duplicateKeyException) {
+            try {
+                stringRedisTemplate.opsForValue().increment(stockKey);
+                stringRedisTemplate.delete(userBookingKey);
+            } catch (Exception redisException) {
+                log.warn("Restore Redis booking state failed after duplicate booking: slotId={}, applicationId={}, error={}",
+                        request.getSlotId(), request.getApplicationId(), redisException.getMessage());
+            }
+            throw new BizException(ErrorCode.INTERVIEW_DUPLICATE);
         } catch (Exception e) {
-            stringRedisTemplate.opsForValue().increment(stockKey);
-            stringRedisTemplate.delete(userBookingKey);
+            try {
+                stringRedisTemplate.opsForValue().increment(stockKey);
+                stringRedisTemplate.delete(userBookingKey);
+            } catch (Exception redisException) {
+                log.warn("Restore Redis booking state failed after booking error: slotId={}, applicationId={}, error={}",
+                        request.getSlotId(), request.getApplicationId(), redisException.getMessage());
+            }
             throw e;
         }
     }
@@ -320,6 +348,8 @@ public class InterviewServiceImpl implements InterviewService {
 
         String stockKey = RedisConstants.INTERVIEW_SLOT_STOCK_PREFIX + booking.getSlotId();
         String userBookingKey = RedisConstants.INTERVIEW_BOOKING_USER_PREFIX + booking.getSlotId() + ":" + userId;
+        InterviewSlot slotForTtl = interviewSlotMapper.selectById(booking.getSlotId());
+        long bookingKeyTtlSeconds = resolveBookingUserKeyTtlSeconds(slotForTtl);
 
         boolean stockReleased = false;
         try {
@@ -342,7 +372,7 @@ public class InterviewServiceImpl implements InterviewService {
                     stringRedisTemplate.opsForValue().set(
                             userBookingKey,
                             userId.toString(),
-                            RedisConstants.INTERVIEW_BOOKING_TTL_SECONDS,
+                            bookingKeyTtlSeconds,
                             TimeUnit.SECONDS);
                 } catch (Exception redisException) {
                     log.warn("Restore Redis booking state failed: bookingId={}, error={}", bookingId, redisException.getMessage());
@@ -444,6 +474,24 @@ public class InterviewServiceImpl implements InterviewService {
         InterviewSlotVO vo = new InterviewSlotVO();
         BeanUtils.copyProperties(slot, vo);
         return vo;
+    }
+
+    private void ensureSlotStockKey(InterviewSlot slot, String stockKey) {
+        Boolean exists = stringRedisTemplate.hasKey(stockKey);
+        if (Boolean.TRUE.equals(exists)) {
+            return;
+        }
+        int remainCount = slot.getRemainCount() == null ? 0 : Math.max(slot.getRemainCount(), 0);
+        stringRedisTemplate.opsForValue().setIfAbsent(stockKey, String.valueOf(remainCount));
+    }
+
+    private long resolveBookingUserKeyTtlSeconds(InterviewSlot slot) {
+        long defaultTtl = RedisConstants.INTERVIEW_BOOKING_TTL_SECONDS;
+        if (slot == null || slot.getEndTime() == null) {
+            return defaultTtl;
+        }
+        long ttlByEndTime = Duration.between(LocalDateTime.now(), slot.getEndTime()).getSeconds() + defaultTtl;
+        return Math.max(defaultTtl, ttlByEndTime);
     }
 
     private void sendBookingNotification(Long studentId, InterviewSlot slot, JobApplication application) {

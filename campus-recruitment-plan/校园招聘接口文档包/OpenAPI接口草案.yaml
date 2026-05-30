@@ -1,38 +1,29 @@
-openapi: 3.1.0
+﻿openapi: 3.1.0
 info:
-  title: 校园智能招聘与面试预约平台 API
+  title: 闁哄秮鈧櫕鐤柡鍛寸細閸忔﹢骞忓☉婊€绮у☉鎾抽叄濞兼壆鎷犻弴銏╂殨缂佹拝绠戦柦鈺呭矗?API
   version: 1.0.0
-  description: 面向学生、企业 HR、管理员的校园招聘与面试预约平台 OpenAPI 草案。
-servers:
+  description: 闂傚牄鍨归幃婊呪偓娑冲閺佹捇濡存担椋庣＜濞?HR闁靛棔鑳堕鎼佹偠閸℃鍠呴柣銊ュ閻楀酣宕堕鐔风彛闁艰鲸眉缁楀矂妫冮姀锝囨Ц濡澘瀚€规娊鐛崘鎻掗叡 OpenAPI 闁艰棄顦伴、宥夊Υ?servers:
 - url: http://localhost:8080/api
-  description: 本地开发环境
-- url: https://api.example.com/api
-  description: 生产环境占位
+  description: 闁哄牜鍓欏﹢鏉戭嚕閳ь剟宕ｉ幋鐘茬畾濠?- url: https://api.example.com/api
+  description: 闁汇垻鍠嶆鍥偝椤栨凹鏆旈柛妤冨С缂?
 tags:
 - name: Auth
-  description: 认证与当前用户
-- name: Student
-  description: 学生资料
+  description: 閻犱降鍊涢惁澶嬬▔鎼达紕绉奸柛鎾崇Ф閺併倝骞?- name: Student
+  description: 閻庢冻濡囬弫鎾舵導閸曨剚鐏?
 - name: Company
-  description: 企业资料与认证
-- name: File
-  description: 文件上传下载
+  description: 濞撮棿妞掔粭鐔烘導閸曨剚鐏愬☉鎾虫唉椤撹崵鎷?- name: File
+  description: 闁哄倸娲ｅ▎銏＄▔婵犱胶鐐婂☉鎾愁儓濞?
 - name: Resume
-  description: 简历管理
-- name: Job
-  description: 岗位浏览、搜索、收藏
-- name: CompanyJob
-  description: 企业岗位管理
+  description: 缂佺姭鍋撻柛妯烘椤撴悂鎮?- name: Job
+  description: 鐎光偓濡炲墽绉存繛鏉戠箺椤秹濡存担瑙勫仢缂侀硸娼块埀顑跨劍閺佸綊鎸?- name: CompanyJob
+  description: 濞撮棿妞掔粭鐔风暆濡炲墽绉寸紒鐙呯磿閹?
 - name: Application
-  description: 岗位投递
-- name: Interview
-  description: 面试场次与预约
-- name: Message
-  description: 站内信
-- name: Admin
-  description: 管理后台
+  description: 鐎光偓濡炲墽绉撮柟鑸垫礋閳?- name: Interview
+  description: 闂傚牄鍨奸惁顖炲捶閻戞﹩鍋у☉鎾抽叄椤ｂ晝鐥?- name: Message
+  description: 缂佹梹鐟ラ崬瀛樼┍?- name: Admin
+  description: 缂佺媴绱曢幃濠囧触鎼粹€抽叡
 - name: Log
-  description: 日志查询
+  description: 闁哄啨鍎辩换鏃堝蓟閵夘煈鍤?
 security:
 - bearerAuth: []
 paths:
@@ -40,8 +31,7 @@ paths:
     post:
       tags:
       - Auth
-      summary: 注册学生或企业账号
-      responses:
+      summary: 婵炲鍔岄崬鐣屸偓娑冲閺佹捇骞嬮弽锔剧＜濞戞挻淇烘径鍕矗?      responses:
         '201':
           description: success
           content:
@@ -49,37 +39,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseRegisterResponse'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -95,7 +83,7 @@ paths:
     post:
       tags:
       - Auth
-      summary: 用户登录
+      summary: 闁活潿鍔嶉崺娑㈡儌鐠囪尙绉?
       responses:
         '200':
           description: success
@@ -104,37 +92,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseLoginResponse'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -150,7 +136,7 @@ paths:
     post:
       tags:
       - Auth
-      summary: 用户登出
+      summary: 闁活潿鍔嶉崺娑㈡儌鐠囨彃姣?
       responses:
         '200':
           description: success
@@ -159,37 +145,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -200,7 +184,7 @@ paths:
     get:
       tags:
       - Auth
-      summary: 获取当前登录用户
+      summary: 闁兼儳鍢茶ぐ鍥亹閹惧啿顤呴柣褑顕х紞宥夋偨閵婏箑鐓?
       responses:
         '200':
           description: success
@@ -209,37 +193,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseCurrentUser'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -250,7 +232,7 @@ paths:
     get:
       tags:
       - Auth
-      summary: 获取当前用户权限列表
+      summary: 闁兼儳鍢茶ぐ鍥亹閹惧啿顤呴柣顫妽閸╂盯寮堕崘顔筋€欓柛鎺擃殙閵?
       responses:
         '200':
           description: success
@@ -259,37 +241,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponsePermissionList'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -300,7 +280,7 @@ paths:
     get:
       tags:
       - Student
-      summary: 获取学生资料
+      summary: 闁兼儳鍢茶ぐ鍥┾偓娑冲閺佹挾鎸ч崟顒佺亹
       responses:
         '200':
           description: success
@@ -309,37 +289,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseStudentProfile'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -349,7 +327,7 @@ paths:
     put:
       tags:
       - Student
-      summary: 保存学生资料
+      summary: 濞ｅ洦绻傞悺銊р偓娑冲閺佹挾鎸ч崟顒佺亹
       responses:
         '200':
           description: success
@@ -358,37 +336,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseStudentProfile'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -405,7 +381,7 @@ paths:
     get:
       tags:
       - Company
-      summary: 获取企业资料
+      summary: 闁兼儳鍢茶ぐ鍥ㄥ娴ｉ鐟归悹褍瀚弸?
       responses:
         '200':
           description: success
@@ -414,37 +390,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseCompanyProfile'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -454,7 +428,7 @@ paths:
     put:
       tags:
       - Company
-      summary: 保存企业资料
+      summary: 濞ｅ洦绻傞悺銊﹀娴ｉ鐟归悹褍瀚弸?
       responses:
         '200':
           description: success
@@ -463,37 +437,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseCompanyProfile'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -510,7 +482,7 @@ paths:
     post:
       tags:
       - Company
-      summary: 提交企业认证
+      summary: 闁圭粯鍔掑锔藉娴ｉ鐟归悹浣靛€涢惁?
       responses:
         '200':
           description: success
@@ -519,37 +491,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseCompanyProfile'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -566,8 +536,7 @@ paths:
     get:
       tags:
       - Company
-      summary: 获取企业认证状态
-      responses:
+      summary: 闁兼儳鍢茶ぐ鍥ㄥ娴ｉ鐟归悹浣靛€涢惁澶愭偐閼哥鍋?      responses:
         '200':
           description: success
           content:
@@ -575,37 +544,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseCompanyCertificationStatus'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -616,7 +583,7 @@ paths:
     post:
       tags:
       - File
-      summary: 上传文件
+      summary: 濞戞挸锕ｇ槐鍫曞棘閸ワ附顐?
       security:
       - bearerAuth: []
       requestBody:
@@ -632,7 +599,7 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: 文件
+                  description: 闁哄倸娲ｅ▎?
                 bizType:
                   $ref: '#/components/schemas/FileBizType'
       responses:
@@ -643,37 +610,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseFileUploadResponse'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -682,57 +647,54 @@ paths:
     get:
       tags:
       - File
-      summary: 下载文件
+      summary: 濞戞挸顑堝ù鍥棘閸ワ附顐?
       security:
       - bearerAuth: []
       parameters:
       - name: fileId
         in: path
         required: true
-        description: 文件 ID
+        description: 闁哄倸娲ｅ▎?ID
         schema:
           type: integer
           format: int64
       responses:
         '200':
-          description: 文件流
-          content:
+          description: 闁哄倸娲ｅ▎銏犆?          content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -741,8 +703,7 @@ paths:
     post:
       tags:
       - Resume
-      summary: 创建简历记录
-      responses:
+      summary: 闁告帗绋戠紓鎾剁不閳ь剟宕㈤崱姘煎敹鐟?      responses:
         '201':
           description: success
           content:
@@ -750,37 +711,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseResume'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -797,8 +756,7 @@ paths:
     get:
       tags:
       - Resume
-      summary: 我的简历列表
-      responses:
+      summary: 闁瑰瓨鍨瑰▓鎴犵不閳ь剟宕㈤崱妤€鐏欓悶?      responses:
         '200':
           description: success
           content:
@@ -806,37 +764,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseResumeList'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -847,8 +803,7 @@ paths:
     put:
       tags:
       - Resume
-      summary: 设置默认简历
-      responses:
+      summary: 閻犱礁澧介悿鍡橆渶濡鍚囩紒鐘亾闁?      responses:
         '200':
           description: success
           content:
@@ -856,37 +811,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -897,7 +850,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 简历 ID
+        description: 缂佺姭鍋撻柛?ID
         schema:
           type: integer
           format: int64
@@ -905,8 +858,7 @@ paths:
     delete:
       tags:
       - Resume
-      summary: 删除简历
-      responses:
+      summary: 闁告帞濞€濞呭海绮婚埀顒勫储?      responses:
         '200':
           description: success
           content:
@@ -914,37 +866,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -955,7 +905,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 简历 ID
+        description: 缂佺姭鍋撻柛?ID
         schema:
           type: integer
           format: int64
@@ -963,7 +913,7 @@ paths:
     get:
       tags:
       - Job
-      summary: 岗位列表 / 岗位搜索
+      summary: 鐎光偓濡炲墽绉撮柛鎺擃殙閵?/ 鐎光偓濡炲墽绉撮柟鍏肩矌閸?
       responses:
         '200':
           description: success
@@ -972,37 +922,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJobPage'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1012,45 +960,42 @@ paths:
       - name: keyword
         in: query
         required: false
-        description: 关键词
-        schema:
+        description: 闁稿繑濞婇弫顓犳嫚?        schema:
           type: string
       - name: city
         in: query
         required: false
-        description: 城市
+        description: 闁糕晛楠哥粩?
         schema:
           type: string
       - name: salaryMin
         in: query
         required: false
-        description: 最低薪资
-        schema:
+        description: 闁哄牃鍋撳ù锝呮唉閺屽倻鎸?        schema:
           type: integer
           format: int32
       - name: salaryMax
         in: query
         required: false
-        description: 最高薪资
-        schema:
+        description: 闁哄牃鍋撳Δ鍌涱焾閺屽倻鎸?        schema:
           type: integer
           format: int32
       - name: education
         in: query
         required: false
-        description: 学历要求
+        description: 閻庢冻绠戝鑽ゆ啺娴ｅ湱婀?
         schema:
           type: string
       - name: experience
         in: query
         required: false
-        description: 经验要求
+        description: 缂備礁绻橀悰娆戞啺娴ｅ湱婀?
         schema:
           type: string
       - name: sort
         in: query
         required: false
-        description: 排序
+        description: 闁圭儤甯掔花?
         schema:
           type: string
           enum:
@@ -1060,7 +1005,7 @@ paths:
         name: pageNum
         in: query
         required: false
-        description: 页码
+        description: 濡炪倗鏁搁悥?
         schema:
           type: integer
           format: int32
@@ -1069,7 +1014,7 @@ paths:
         name: pageSize
         in: query
         required: false
-        description: 每页数量
+        description: 婵絽绻橀妴澶愬极娴兼潙娅?
         schema:
           type: integer
           format: int32
@@ -1078,7 +1023,7 @@ paths:
     get:
       tags:
       - Job
-      summary: 岗位详情
+      summary: 鐎光偓濡炲墽绉撮悹鍥烽檮閸?
       responses:
         '200':
           description: success
@@ -1087,37 +1032,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJobDetail'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1127,7 +1070,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
@@ -1135,7 +1078,7 @@ paths:
     post:
       tags:
       - Job
-      summary: 收藏岗位
+      summary: 闁衡偓閹増顥戠€光偓濡炲墽绉?
       responses:
         '200':
           description: success
@@ -1144,37 +1087,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1185,14 +1126,14 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
     delete:
       tags:
       - Job
-      summary: 取消收藏岗位
+      summary: 闁告瑦鐗楃粔鐑藉绩閹増顥戠€光偓濡炲墽绉?
       responses:
         '200':
           description: success
@@ -1201,37 +1142,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1242,7 +1181,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
@@ -1250,7 +1189,7 @@ paths:
     get:
       tags:
       - CompanyJob
-      summary: 企业岗位列表
+      summary: 濞撮棿妞掔粭鐔风暆濡炲墽绉撮柛鎺擃殙閵?
       responses:
         '200':
           description: success
@@ -1259,37 +1198,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJobPage'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1300,8 +1237,7 @@ paths:
       - name: status
         in: query
         required: false
-        description: 岗位状态
-        schema:
+        description: 鐎光偓濡炲墽绉撮柣妯垮煐閳?        schema:
           type: string
           enum:
           - DRAFT
@@ -1313,15 +1249,14 @@ paths:
       - name: keyword
         in: query
         required: false
-        description: 关键词
-        schema:
+        description: 闁稿繑濞婇弫顓犳嫚?        schema:
           type: string
       - *id001
       - *id002
     post:
       tags:
       - CompanyJob
-      summary: 创建岗位
+      summary: 闁告帗绋戠紓鎾崇暆濡炲墽绉?
       responses:
         '201':
           description: success
@@ -1330,37 +1265,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJob'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1377,7 +1310,7 @@ paths:
     get:
       tags:
       - CompanyJob
-      summary: 企业岗位详情
+      summary: 濞撮棿妞掔粭鐔风暆濡炲墽绉撮悹鍥烽檮閸?
       responses:
         '200':
           description: success
@@ -1386,37 +1319,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJobDetail'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1427,14 +1358,14 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
     put:
       tags:
       - CompanyJob
-      summary: 编辑岗位
+      summary: 缂傚倹鐗炵欢顐㈢暆濡炲墽绉?
       responses:
         '200':
           description: success
@@ -1443,37 +1374,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseJob'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1484,7 +1413,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
@@ -1498,7 +1427,7 @@ paths:
     put:
       tags:
       - CompanyJob
-      summary: 提交岗位审核
+      summary: 闁圭粯鍔掑锕€鐣濆鍓хТ閻庡厜鍓濋悧?
       responses:
         '200':
           description: success
@@ -1507,37 +1436,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1548,7 +1475,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
@@ -1556,7 +1483,7 @@ paths:
     put:
       tags:
       - CompanyJob
-      summary: 下架岗位
+      summary: 濞戞挸顑嗛悘锕€鐣濆鍓хТ
       responses:
         '200':
           description: success
@@ -1565,37 +1492,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1606,7 +1531,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 岗位 ID
+        description: 鐎光偓濡炲墽绉?ID
         schema:
           type: integer
           format: int64
@@ -1614,8 +1539,7 @@ paths:
     post:
       tags:
       - Application
-      summary: 投递岗位
-      responses:
+      summary: 闁硅埖娲熼埀顒佸笒閻牗鎷?      responses:
         '201':
           description: success
           content:
@@ -1623,37 +1547,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseApplication'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1670,8 +1592,7 @@ paths:
     get:
       tags:
       - Application
-      summary: 我的投递列表
-      responses:
+      summary: 闁瑰瓨鍨瑰▓鎴﹀箮閺団懇鍋撻幒鎴濈仚閻?      responses:
         '200':
           description: success
           content:
@@ -1679,37 +1600,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseApplicationPage'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -1720,8 +1639,7 @@ paths:
       - name: status
         in: query
         required: false
-        description: 投递状态
-        schema:
+        description: 闁硅埖娲熼埀顒佸笧婵悂骞€?        schema:
           type: string
           enum:
           - DELIVERED
@@ -1737,7 +1655,7 @@ paths:
     get:
       tags:
       - Application
-      summary: 投递详情
+      summary: 查看我的投递详情
       responses:
         '200':
           description: success
@@ -1746,37 +1664,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseApplicationDetail'
         '400':
-          description: 参数错误
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 未登录或 Token 无效
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
+          description: 无权限访问
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 投递记录不存在
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
@@ -1787,1614 +1699,46 @@ paths:
       - name: id
         in: path
         required: true
-        description: 投递 ID
+        description: 投递记录ID
         schema:
           type: integer
           format: int64
-  /company/applications:
+  /dicts:
     get:
       tags:
-      - Application
-      summary: 企业投递列表
+      - Dict
+      summary: 按类型查询启用字典项
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiResponseApplicationPage'
+                $ref: '#/components/schemas/ApiResponseDictList'
         '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
       parameters:
-      - name: jobId
+      - name: dictType
         in: query
-        required: false
-        description: 岗位 ID
-        schema:
-          type: integer
-          format: int32
-      - name: status
-        in: query
-        required: false
-        description: 投递状态
+        required: true
+        description: 字典类型
         schema:
           type: string
-      - name: keyword
-        in: query
-        required: false
-        description: 学生姓名/学校/专业
-        schema:
-          type: string
-      - *id001
-      - *id002
-  /company/applications/{id}/status:
-    put:
-      tags:
-      - Application
-      summary: 企业修改投递状态
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseApplication'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 投递 ID
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApplicationStatusUpdateRequest'
-  /company/interview/slots:
-    get:
-      tags:
-      - Interview
-      summary: 企业面试场次列表
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewSlotPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: jobId
-        in: query
-        required: false
-        description: 岗位 ID
-        schema:
-          type: integer
-          format: int32
-      - name: status
-        in: query
-        required: false
-        description: 场次状态
-        schema:
-          type: string
-      - *id001
-      - *id002
-    post:
-      tags:
-      - Interview
-      summary: 创建面试场次
-      responses:
-        '201':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewSlot'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InterviewSlotCreateRequest'
-  /company/interview/slots/{id}:
-    put:
-      tags:
-      - Interview
-      summary: 编辑面试场次
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewSlot'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 场次 ID
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InterviewSlotUpdateRequest'
-  /company/interview/slots/{id}/close:
-    put:
-      tags:
-      - Interview
-      summary: 关闭面试场次
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 场次 ID
-        schema:
-          type: integer
-          format: int64
-  /company/interview/slots/{id}/bookings:
-    get:
-      tags:
-      - Interview
-      summary: 面试场次预约名单
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 场次 ID
-        schema:
-          type: integer
-          format: int64
-      - *id001
-      - *id002
-  /interview/slots:
-    get:
-      tags:
-      - Interview
-      summary: 查询可预约面试场次
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewSlotList'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: jobId
-        in: query
-        required: true
-        description: 岗位 ID
-        schema:
-          type: integer
-          format: int32
-      - name: applicationId
-        in: query
-        required: true
-        description: 投递 ID
-        schema:
-          type: integer
-          format: int32
-  /interview/bookings:
-    post:
-      tags:
-      - Interview
-      summary: 预约面试
-      responses:
-        '201':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewBooking'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InterviewBookingCreateRequest'
-  /interview/bookings/my:
-    get:
-      tags:
-      - Interview
-      summary: 我的面试预约
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: 预约状态
-        schema:
-          type: string
-          enum:
-          - BOOKED
-          - CANCELED
-          - FINISHED
-      - *id001
-      - *id002
-  /interview/bookings/{id}:
-    get:
-      tags:
-      - Interview
-      summary: 预约详情
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseInterviewBookingDetail'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 预约 ID
-        schema:
-          type: integer
-          format: int64
-  /interview/bookings/{id}/cancel:
-    put:
-      tags:
-      - Interview
-      summary: 取消预约
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 预约 ID
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CancelRequest'
-  /messages/my:
-    get:
-      tags:
-      - Message
-      summary: 我的消息列表
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseMessagePage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: readStatus
-        in: query
-        required: false
-        description: 阅读状态
-        schema:
-          type: string
-          enum:
-          - UNREAD
-          - READ
-          - DELETED
-      - name: messageType
-        in: query
-        required: false
-        description: 消息类型
-        schema:
-          type: string
-      - *id001
-      - *id002
-  /messages/unread-count:
-    get:
-      tags:
-      - Message
-      summary: 未读消息数
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseUnreadCount'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-  /messages/{id}/read:
-    put:
-      tags:
-      - Message
-      summary: 标记消息已读
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 消息 ID
-        schema:
-          type: integer
-          format: int64
-  /messages/{id}:
-    delete:
-      tags:
-      - Message
-      summary: 删除消息
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 消息 ID
-        schema:
-          type: integer
-          format: int64
-  /admin/dashboard:
-    get:
-      tags:
-      - Admin
-      summary: 管理后台数据看板
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseAdminDashboard'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-  /admin/users:
-    get:
-      tags:
-      - Admin
-      summary: 用户列表
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseAdminUserPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: userType
-        in: query
-        required: false
-        description: 用户类型
-        schema:
-          type: string
-          enum:
-          - STUDENT
-          - COMPANY
-          - ADMIN
-      - name: status
-        in: query
-        required: false
-        description: 状态
-        schema:
-          type: string
-      - name: keyword
-        in: query
-        required: false
-        description: 用户名/手机号/邮箱
-        schema:
-          type: string
-      - *id001
-      - *id002
-  /admin/users/{id}/disable:
-    put:
-      tags:
-      - Admin
-      summary: 禁用用户
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 用户 ID
-        schema:
-          type: integer
-          format: int64
-  /admin/users/{id}/enable:
-    put:
-      tags:
-      - Admin
-      summary: 恢复用户
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 用户 ID
-        schema:
-          type: integer
-          format: int64
-  /admin/companies/audits:
-    get:
-      tags:
-      - Admin
-      summary: 企业审核列表
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseCompanyPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: auditStatus
-        in: query
-        required: false
-        description: 审核状态
-        schema:
-          type: string
-      - name: keyword
-        in: query
-        required: false
-        description: 企业名称
-        schema:
-          type: string
-      - *id001
-      - *id002
-  /admin/companies/{id}:
-    get:
-      tags:
-      - Admin
-      summary: 企业详情
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseCompanyProfile'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 企业资料 ID
-        schema:
-          type: integer
-          format: int64
-  /admin/companies/{id}/audit:
-    put:
-      tags:
-      - Admin
-      summary: 审核企业认证
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 企业资料 ID
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuditRequest'
-  /admin/jobs/audits:
-    get:
-      tags:
-      - Admin
-      summary: 岗位审核列表
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseJobPage'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: 岗位状态
-        schema:
-          type: string
-          enum:
-          - PENDING_REVIEW
-          - PUBLISHED
-          - REJECTED
-      - name: keyword
-        in: query
-        required: false
-        description: 岗位/企业关键词
-        schema:
-          type: string
-      - *id001
-      - *id002
-  /admin/jobs/{id}:
-    get:
-      tags:
-      - Admin
-      summary: 管理员查看岗位详情
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseJobDetail'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 岗位 ID
-        schema:
-          type: integer
-          format: int64
-  /admin/jobs/{id}/audit:
-    put:
-      tags:
-      - Admin
-      summary: 审核岗位
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseVoid'
-        '400':
-          description: 参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: 未登录或 Token 失效
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: 系统异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        description: 岗位 ID
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuditRequest'
   /admin/dicts:
     get:
       tags:
       - Admin
-      summary: 字典列表
+      summary: 管理员分页查询字典项
       responses:
         '200':
           description: success
@@ -3403,37 +1747,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseDictPage'
         '400':
-          description: 参数错误
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 未登录或 Token 无效
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 无权限访问
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
@@ -3450,15 +1782,18 @@ paths:
       - name: status
         in: query
         required: false
-        description: 状态
+        description: 字典状态
         schema:
           type: string
+          enum:
+          - NORMAL
+          - DISABLED
       - *id001
       - *id002
     post:
       tags:
       - Admin
-      summary: 新增字典
+      summary: 新增字典项
       responses:
         '201':
           description: success
@@ -3467,37 +1802,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseDict'
         '400':
-          description: 参数错误
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 未登录或 Token 无效
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 无权限访问
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
@@ -3514,7 +1837,7 @@ paths:
     put:
       tags:
       - Admin
-      summary: 修改字典
+      summary: 修改字典项
       responses:
         '200':
           description: success
@@ -3523,37 +1846,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseDict'
         '400':
-          description: 参数错误
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 未登录或 Token 无效
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
+          description: 无权限访问
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 字典项不存在
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
@@ -3564,7 +1881,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: 字典 ID
+        description: 字典项ID
         schema:
           type: integer
           format: int64
@@ -3577,7 +1894,7 @@ paths:
     delete:
       tags:
       - Admin
-      summary: 删除字典
+      summary: 停用字典项
       responses:
         '200':
           description: success
@@ -3586,37 +1903,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseVoid'
         '400':
-          description: 参数错误
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 未登录或 Token 无效
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
+          description: 无权限访问
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 字典项不存在
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 服务器内部错误
           content:
             application/json:
               schema:
@@ -3627,15 +1938,1320 @@ paths:
       - name: id
         in: path
         required: true
-        description: 字典 ID
+        description: 字典项ID
         schema:
           type: integer
           format: int64
+  /company/applications:
+    get:
+      tags:
+      - Application
+      summary: 濞撮棿妞掔粭鐔煎箮閺団懇鍋撻幒鎴濈仚閻?      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplicationPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: false
+        description: 鐎光偓濡炲墽绉?ID
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        description: 闁硅埖娲熼埀顒佸笧婵悂骞€?        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 閻庢冻濡囬弫鎾存叏閹捐櫕鍊?閻庢冻闄勯悧?濞戞挻鎸风粭?
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /company/applications/{id}/status:
+    put:
+      tags:
+      - Application
+      summary: 濞撮棿妞掔粭鐔哥┍椤旇姤鏆柟鑸垫礋閳ь剚甯炴慨鎼佸箑?      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseApplication'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 闁硅埖娲熼埀?ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationStatusUpdateRequest'
+  /company/interview/slots:
+    get:
+      tags:
+      - Interview
+      summary: 濞撮棿妞掔粭鐔兼閵忥絿妲搁柛锔惧劋椤愬ジ宕氬Δ鍕┾偓?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlotPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: false
+        description: 鐎光偓濡炲墽绉?ID
+        schema:
+          type: integer
+          format: int32
+      - name: status
+        in: query
+        required: false
+        description: 闁革妇鍎ら濂告偐閼哥鍋?        schema:
+          type: string
+      - *id001
+      - *id002
+    post:
+      tags:
+      - Interview
+      summary: 闁告帗绋戠紓鎾绘閵忥絿妲搁柛锔惧劋椤?
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlot'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewSlotCreateRequest'
+  /company/interview/slots/{id}/close:
+    put:
+      tags:
+      - Interview
+      summary: 闁稿繑濞婂Λ鎾閵忥絿妲搁柛锔惧劋椤?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 闁革妇鍎ら?ID
+        schema:
+          type: integer
+          format: int64
+  /company/interview/slots/{id}/bookings:
+    get:
+      tags:
+      - Interview
+      summary: 闂傚牄鍨奸惁顖炲捶閻戞﹩鍋уΛ鏉垮鐎规娊宕ュ鍛
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 闁革妇鍎ら?ID
+        schema:
+          type: integer
+          format: int64
+      - *id001
+      - *id002
+  /interview/slots:
+    get:
+      tags:
+      - Interview
+      summary: 闁哄被鍎撮妤呭矗椤栫儐鏆曠紒鎾呯畵濞兼壆鎷犻弴鐐寸皻婵?      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewSlotList'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: jobId
+        in: query
+        required: true
+        description: 鐎光偓濡炲墽绉?ID
+        schema:
+          type: integer
+          format: int32
+      - name: applicationId
+        in: query
+        required: true
+        description: 闁硅埖娲熼埀?ID
+        schema:
+          type: integer
+          format: int32
+  /interview/bookings:
+    post:
+      tags:
+      - Interview
+      summary: 濡澘瀚€规娊妫冮姀锝囨Ц
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBooking'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterviewBookingCreateRequest'
+  /interview/bookings/my:
+    get:
+      tags:
+      - Interview
+      summary: 闁瑰瓨鍨瑰▓鎴︽閵忥絿妲稿Λ鏉垮鐎?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseInterviewBookingPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 濡澘瀚€规娊鎮╅懜纰樺亾?        schema:
+          type: string
+          enum:
+          - BOOKED
+          - CANCELED
+          - FINISHED
+      - *id001
+      - *id002
+  /interview/bookings/{id}/cancel:
+    put:
+      tags:
+      - Interview
+      summary: 闁告瑦鐗楃粔閿嬶紣閸曨厼顔?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 濡澘瀚€?ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelRequest'
+  /messages/my:
+    get:
+      tags:
+      - Message
+      summary: 闁瑰瓨鍨瑰▓鎴濃槈閸喍绱栭柛鎺擃殙閵?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMessagePage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: readStatus
+        in: query
+        required: false
+        description: 闂傚啫鎳撻浼存偐閼哥鍋?        schema:
+          type: string
+          enum:
+          - UNREAD
+          - READ
+          - DELETED
+      - name: messageType
+        in: query
+        required: false
+        description: 婵炴垵鐗婃导鍛尵鐠囪尙鈧?
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /messages/unread-count:
+    get:
+      tags:
+      - Message
+      summary: 闁哄牜浜ｉ鏉库槈閸喍绱栭柡?      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUnreadCount'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /messages/{id}/read:
+    put:
+      tags:
+      - Message
+      summary: 闁哄秴娲╅鍥р槈閸喍绱栫€规瓕灏?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 婵炴垵鐗婃导?ID
+        schema:
+          type: integer
+          format: int64
+  /messages/{id}:
+    delete:
+      tags:
+      - Message
+      summary: 闁告帞濞€濞呭骸鈽夐崼鐔剁礀
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 婵炴垵鐗婃导?ID
+        schema:
+          type: integer
+          format: int64
+  /admin/dashboard:
+    get:
+      tags:
+      - Admin
+      summary: 缂佺媴绱曢幃濠囧触鎼粹€抽叡闁轰胶澧楀畵渚€鎯囩€ｎ偅绶?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAdminDashboard'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+  /admin/users:
+    get:
+      tags:
+      - Admin
+      summary: 闁活潿鍔嶉崺娑㈠礆濡ゅ嫨鈧?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAdminUserPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: userType
+        in: query
+        required: false
+        description: 闁活潿鍔嶉崺娑氱尵鐠囪尙鈧?
+        schema:
+          type: string
+          enum:
+          - STUDENT
+          - COMPANY
+          - ADMIN
+      - name: status
+        in: query
+        required: false
+        description: 闁绘鍩栭埀?        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 闁活潿鍔嶉崺娑㈠触?闁归潧顑嗗┃鈧柛?闂侇収鍠氶?
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/users/{id}/disable:
+    put:
+      tags:
+      - Admin
+      summary: 缂佸倷鑳堕弫銈夋偨閵婏箑鐓?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 闁活潿鍔嶉崺?ID
+        schema:
+          type: integer
+          format: int64
+  /admin/users/{id}/enable:
+    put:
+      tags:
+      - Admin
+      summary: 闁诡厹鍨归ˇ鏌ユ偨閵婏箑鐓?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 闁活潿鍔嶉崺?ID
+        schema:
+          type: integer
+          format: int64
+  /admin/companies/pending:
+    get:
+      tags:
+      - Admin
+      summary: 濞撮棿妞掔粭鐔衡偓鍏夊墲閻楁娊宕氬Δ鍕┾偓?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCompanyPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: auditStatus
+        in: query
+        required: false
+        description: 閻庡厜鍓濋悧鎶芥偐閼哥鍋?        schema:
+          type: string
+      - name: keyword
+        in: query
+        required: false
+        description: 濞撮棿妞掔粭鐔煎触瀹ュ泦?
+        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/companies/{id}/audit:
+    put:
+      tags:
+      - Admin
+      summary: 閻庡厜鍓濋悧铏娴ｉ鐟归悹浣靛€涢惁?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 濞撮棿妞掔粭鐔烘導閸曨剚鐏?ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRequest'
+  /admin/jobs/pending:
+    get:
+      tags:
+      - Admin
+      summary: 鐎光偓濡炲墽绉撮悗鍏夊墲閻楁娊宕氬Δ鍕┾偓?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobPage'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: 鐎光偓濡炲墽绉撮柣妯垮煐閳?        schema:
+          type: string
+          enum:
+          - PENDING_REVIEW
+          - PUBLISHED
+          - REJECTED
+      - name: keyword
+        in: query
+        required: false
+        description: 鐎光偓濡炲墽绉?濞撮棿妞掔粭鐔煎礂閹惰姤鏆涢悹?        schema:
+          type: string
+      - *id001
+      - *id002
+  /admin/jobs/{id}/audit:
+    put:
+      tags:
+      - Admin
+      summary: 閻庡厜鍓濋悧鍐茬暆濡炲墽绉?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+        '400':
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 鐎光偓濡炲墽绉?ID
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRequest'
   /admin/logs/operation:
     get:
       tags:
       - Log
-      summary: 操作日志列表
+      summary: 闁瑰灝绉崇紞鏃堝籍閵夈儳绠堕柛鎺擃殙閵?
       responses:
         '200':
           description: success
@@ -3644,37 +3260,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseOperationLogPage'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -3685,20 +3299,18 @@ paths:
       - name: username
         in: query
         required: false
-        description: 用户名
-        schema:
+        description: 闁活潿鍔嶉崺娑㈠触?        schema:
           type: string
       - name: module
         in: query
         required: false
-        description: 模块
+        description: 婵☆垪鈧櫕鍋?
         schema:
           type: string
       - name: resultStatus
         in: query
         required: false
-        description: 结果状态
-        schema:
+        description: 缂備焦鎸婚悘澶愭偐閼哥鍋?        schema:
           type: string
       - *id001
       - *id002
@@ -3706,7 +3318,7 @@ paths:
     get:
       tags:
       - Log
-      summary: 登录日志列表
+      summary: 闁谎嗩嚙缂嶅秹寮妷銉х闁告帗顨夐妴?
       responses:
         '200':
           description: success
@@ -3715,37 +3327,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseLoginLogPage'
         '400':
-          description: 参数错误
+          description: 闁告瑥鍊归弳鐔兼煥濞嗘帩鍤?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: 未登录或 Token 失效
+          description: 闁哄牜浜炲▍銉ㄣ亹閺囩喎鐏?Token 濠㈡儼椴搁弲?
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: 无权限
-          content:
+          description: 闁哄啰濮靛鍫ユ⒔?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: 资源不存在
-          content:
+          description: 閻犙冨缁喗绋夊鍛憼闁?          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: 业务冲突，例如重复投递或重复预约
+          description: 濞戞挻鑹炬慨鐔煎礃閼碱剛宕愰柨娑樺缁躲儲淇婇崒鐐叉濠㈣泛绉垫慨鍥焻閹烘挸鐏楅梺鎻掔Т椤﹀弶锛愰崟顓烆唺
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: 系统异常
+          description: 缂侇垵宕电划鍝勵嚕閸屾氨鍩?
           content:
             application/json:
               schema:
@@ -3756,17 +3366,94 @@ paths:
       - name: username
         in: query
         required: false
-        description: 用户名
-        schema:
+        description: 闁活潿鍔嶉崺娑㈠触?        schema:
           type: string
       - name: status
         in: query
         required: false
-        description: 登录状态
+        description: 闁谎嗩嚙缂嶅秹鎮╅懜纰樺亾?        schema:
+          type: string
+      - *id001
+      - *id002
+  /auth/refresh-token:
+    post:
+      tags:
+      - Auth
+      summary: 鍒锋柊Token
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLogin'
+      security:
+      - bearerAuth: []
+  /jobs/search:
+    get:
+      tags:
+      - Job
+      summary: 宀椾綅鎼滅储(ES)
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJobPage'
+      parameters:
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: salaryMin
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: salaryMax
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: education
+        in: query
+        required: false
         schema:
           type: string
       - *id001
       - *id002
+  /company/interview/slots/{id}/open:
+    put:
+      tags:
+      - Interview
+      summary: 閲嶆柊寮€鏀鹃潰璇曞満娆?
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseVoid'
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: 鍦烘 ID
+        schema:
+          type: integer
+          format: int64
+
 components:
   securitySchemes:
     bearerAuth:
@@ -3857,8 +3544,7 @@ components:
           example: 30002
         message:
           type: string
-          example: 重复投递
-        data:
+          example: 闂佹彃绉撮ˇ鏌ュ箮閺団懇鍋?        data:
           nullable: true
     PageMeta:
       type: object
@@ -3948,7 +3634,7 @@ components:
           example: zhangsan
         nickname:
           type: string
-          example: 张三
+          example: 鐎殿喚濮崇粭?
         userType:
           $ref: '#/components/schemas/UserType'
         roles:
@@ -4006,16 +3692,16 @@ components:
       properties:
         realName:
           type: string
-          example: 张三
+          example: 鐎殿喚濮崇粭?
         gender:
           type: string
           example: MALE
         school:
           type: string
-          example: 某某大学
+          example: 闁哄本鍔栭悡鍥ㄥ緞瑜嶉?
         major:
           type: string
-          example: 软件工程
+          example: 閺夌儐鍨▎銏狀啅閵壯€鏌?
         grade:
           type: string
           example: '2023'
@@ -4024,10 +3710,10 @@ components:
           example: BACHELOR
         city:
           type: string
-          example: 北京
+          example: 闁告牗銇為崥?
         jobIntention:
           type: string
-          example: Java 后端实习
+          example: Java 闁告艾娴烽顒傗偓鍦仒缁?
         skills:
           type: array
           items:
@@ -4037,7 +3723,7 @@ components:
           - Redis
         advantage:
           type: string
-          example: 熟悉 Java、Spring Boot、MySQL
+          example: 闁绘梻鍠愰崐?Java闁靛棔璁ring Boot闁靛棔搴測SQL
     StudentProfile:
       type: object
       properties:
@@ -4076,22 +3762,19 @@ components:
       properties:
         companyName:
           type: string
-          example: XX科技有限公司
+          example: XX缂佸鍨舵俊褔寮垫径鎰€欓柛蹇ｅ墮瀵?
         industry:
           type: string
-          example: 互联网
-        scale:
+          example: 濞存粍甯熸禒鍫㈢磾?        scale:
           type: string
-          example: 100-499人
-        city:
+          example: 100-499濞?        city:
           type: string
-          example: 北京
+          example: 闁告牗銇為崥?
         address:
           type: string
-          example: 北京市海淀区
-        contactName:
+          example: 闁告牗銇為崥顐ゆ暜閸屾稒宕虫繛锝傚亾闁?        contactName:
           type: string
-          example: 王 HR
+          example: 闁?HR
         contactPhone:
           type: string
           example: '13800000000'
@@ -4184,8 +3867,7 @@ components:
       properties:
         resumeName:
           type: string
-          example: Java 后端实习简历
-        fileId:
+          example: Java 闁告艾娴烽顒傗偓鍦仒缁″嫮绮婚埀顒勫储?        fileId:
           type: integer
           format: int64
           example: 30001
@@ -4325,8 +4007,7 @@ components:
         resumeId:
           type: integer
           format: int64
-          description: 不传则使用默认简历
-    ApplicationStatusUpdateRequest:
+          description: 濞戞挸绉崇槐鍫曞礆濞嗗骸鈻忛柣顫姂缁垳鎷嬮妶鍥╂殕闁?    ApplicationStatusUpdateRequest:
       type: object
       required:
       - status
@@ -4519,7 +4200,7 @@ components:
       properties:
         reason:
           type: string
-          example: 时间冲突
+          example: 闁哄啫鐖煎Λ鍧楀礃閼碱剛宕?
     Message:
       type: object
       properties:
@@ -4617,6 +4298,11 @@ components:
           type: string
         sort:
           type: integer
+        status:
+          type: string
+          enum:
+          - NORMAL
+          - DISABLED
         remark:
           type: string
     DictUpdateRequest:
@@ -5163,6 +4849,17 @@ components:
           example: success
         data:
           $ref: '#/components/schemas/Dict'
+    ApiResponseDictList:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/DictList'
     ApiResponseDictPage:
       type: object
       properties:
@@ -5204,3 +4901,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/InterviewSlot'
+    DictList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Dict'

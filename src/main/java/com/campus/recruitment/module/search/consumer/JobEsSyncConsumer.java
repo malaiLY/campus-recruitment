@@ -42,8 +42,8 @@ public class JobEsSyncConsumer {
             Long jobId = toLong(body.get("jobId"));
 
             if (jobId == null) {
-                log.warn("ES sync message is missing jobId, ack and skip");
-                channel.basicAck(deliveryTag, false);
+                log.error("ES sync message is missing jobId, send to DLQ: messageId={}", messageId);
+                channel.basicNack(deliveryTag, false, false);
                 return;
             }
 
@@ -81,8 +81,10 @@ public class JobEsSyncConsumer {
                     }
                     break;
                 default:
-                    log.warn("Unknown ES sync action: action={}", action);
-                    break;
+                    log.error("Unknown ES sync action, send to DLQ: action={}, messageId={}, jobId={}",
+                            action, messageId, jobId);
+                    channel.basicNack(deliveryTag, false, false);
+                    return;
             }
 
             if (messageId != null) {

@@ -38,7 +38,9 @@ public class OutboxService {
         try {
             logRecord.setMessageBody(objectMapper.writeValueAsString(message));
         } catch (Exception e) {
-            log.warn("序列化MQ消息体失败: {}", e.getMessage());
+            log.error("Serialize MQ message body failed, abort outbox send: messageId={}, error={}",
+                    messageId, e.getMessage(), e);
+            throw new IllegalStateException("Serialize MQ message body failed", e);
         }
         mqMessageLogMapper.insert(logRecord);
 
@@ -57,17 +59,17 @@ public class OutboxService {
     }
 
     void sendAndUpdateLog(MqMessageLog logRecord, String exchange, String routingKey,
-                                  Object message, String messageId) {
+                          Object message, String messageId) {
         try {
             rabbitTemplate.convertAndSend(exchange, routingKey, message);
             logRecord.setSendStatus("SENT");
             logRecord.setUpdateTime(LocalDateTime.now());
-            log.info("Outbox MQ发送成功: messageId={}", messageId);
+            log.info("Outbox MQ sent successfully: messageId={}", messageId);
         } catch (Exception e) {
             logRecord.setSendStatus("SEND_FAILED");
             logRecord.setErrorMessage(e.getMessage());
             logRecord.setUpdateTime(LocalDateTime.now());
-            log.error("Outbox MQ发送失败: messageId={}, error={}", messageId, e.getMessage(), e);
+            log.error("Outbox MQ send failed: messageId={}, error={}", messageId, e.getMessage(), e);
         }
         mqMessageLogMapper.updateById(logRecord);
     }

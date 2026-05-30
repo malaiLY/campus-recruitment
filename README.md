@@ -187,6 +187,16 @@ OpenAPI JSON: `http://localhost:8080/api/v3/api-docs`
 
 ---
 
+## 配置与迁移说明（2026-05-29）
+
+- 默认启动 profile 已调整为 `prod`，请通过环境变量 `SPRING_PROFILES_ACTIVE` 显式指定运行环境。
+- 本地开发建议使用 `dev`（见上方启动命令）。
+- 生产环境请提供 `application-prod.yml` 中要求的环境变量（数据库、Redis、RabbitMQ、ES、MinIO、JWT 等）。
+- 项目已接入 Flyway，启动时会自动执行 `src/main/resources/db/migration` 下的迁移脚本。
+- 对于旧库升级场景，Flyway 启用 `baseline-on-migrate`，并会执行 `V2__mq_retry_counter_split.sql` 补齐 `mq_message_log` 重试字段与索引。
+
+---
+
 ## 项目结构
 
 ```
@@ -307,3 +317,19 @@ return stock - 1
 ## License
 
 本项目用于学习、校招展示和个人作品集，可按需自行修改。
+
+---
+
+## 数据库升级说明（2026-05-29）
+
+如果你的数据库是在 2026-05-29 之前初始化的（`mq_message_log` 仍使用旧字段 `retry_count`），升级到当前代码前请先执行：
+
+```bash
+mysql -uroot -proot campus_recruitment < "campus-recruitment-plan/校园招聘数据库设计包/V002__mq消息重试计数拆分迁移.sql"
+```
+
+说明：
+- 新增 `send_retry_count`、`consume_retry_count`
+- 尝试从旧 `retry_count` 回填历史值
+- 新增索引 `idx_mq_send_retry`
+- 脚本为幂等设计，可重复执行

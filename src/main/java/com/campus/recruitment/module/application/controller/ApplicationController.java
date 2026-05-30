@@ -5,6 +5,7 @@ import com.campus.recruitment.common.result.PageResult;
 import com.campus.recruitment.common.result.R;
 import com.campus.recruitment.module.application.dto.CreateApplicationRequest;
 import com.campus.recruitment.module.application.service.ApplicationService;
+import com.campus.recruitment.module.application.vo.ApplicationDetailVO;
 import com.campus.recruitment.module.application.vo.ApplicationStatusVO;
 import com.campus.recruitment.module.application.vo.MyApplicationVO;
 import jakarta.validation.Valid;
@@ -35,5 +36,12 @@ public class ApplicationController {
             @RequestParam(required = false) String status) {
         PageResult<MyApplicationVO> page = applicationService.getMyApplications(pageNum, pageSize, status);
         return R.ok(page);
+    }
+
+    @GetMapping("/{id}")
+    @RequireLogin
+    public R<ApplicationDetailVO> getMyApplicationDetail(@PathVariable("id") Long id) {
+        ApplicationDetailVO detail = applicationService.getMyApplicationDetail(id);
+        return R.ok(detail);
     }
 }

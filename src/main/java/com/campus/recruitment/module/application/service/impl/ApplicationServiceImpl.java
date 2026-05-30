@@ -28,6 +28,8 @@ import com.campus.recruitment.mapper.ResumeMapper;
 import com.campus.recruitment.mapper.StudentProfileMapper;
 import com.campus.recruitment.module.application.dto.CreateApplicationRequest;
 import com.campus.recruitment.module.application.dto.UpdateApplicationStatusRequest;
+import com.campus.recruitment.module.application.vo.ApplicationDetailVO;
+import com.campus.recruitment.module.application.vo.ApplicationStatusLogVO;
 import com.campus.recruitment.module.application.service.ApplicationService;
 import com.campus.recruitment.module.application.vo.ApplicationStatusVO;
 import com.campus.recruitment.module.application.vo.ApplicationVO;
@@ -199,6 +201,54 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .collect(Collectors.toList());
 
         return new PageResult<>(voList, applicationPage.getTotal(), pageNum, pageSize);
+    }
+
+    @Override
+    public ApplicationDetailVO getMyApplicationDetail(Long applicationId) {
+        Long userId = LoginUserContext.getUserId();
+
+        JobApplication application = jobApplicationMapper.selectById(applicationId);
+        if (application == null) {
+            throw new BizException(ErrorCode.APPLICATION_NOT_EXIST);
+        }
+        if (!userId.equals(application.getStudentId())) {
+            throw new BizException(ErrorCode.FORBIDDEN, "无权查看该投递记录");
+        }
+
+        Job job = jobMapper.selectById(application.getJobId());
+        CompanyProfile company = companyProfileMapper.selectById(application.getCompanyId());
+        List<ApplicationLog> logs = applicationLogMapper.selectList(
+                new LambdaQueryWrapper<ApplicationLog>()
+                        .eq(ApplicationLog::getApplicationId, applicationId)
+                        .orderByDesc(ApplicationLog::getCreateTime, ApplicationLog::getId));
+
+        ApplicationDetailVO detailVO = new ApplicationDetailVO();
+        detailVO.setId(application.getId());
+        detailVO.setJobId(application.getJobId());
+        detailVO.setCompanyId(application.getCompanyId());
+        detailVO.setResumeId(application.getResumeId());
+        detailVO.setStatus(application.getStatus());
+        detailVO.setApplyTime(application.getApplyTime());
+
+        if (job != null) {
+            detailVO.setJobTitle(job.getTitle());
+        }
+        if (company != null) {
+            detailVO.setCompanyName(company.getCompanyName());
+        }
+
+        List<ApplicationStatusLogVO> statusLogs = logs.stream().map(log -> {
+            ApplicationStatusLogVO logVO = new ApplicationStatusLogVO();
+            logVO.setBeforeStatus(log.getBeforeStatus());
+            logVO.setAfterStatus(log.getAfterStatus());
+            logVO.setOperatorType(log.getOperatorType());
+            logVO.setReason(log.getReason());
+            logVO.setCreateTime(log.getCreateTime());
+            return logVO;
+        }).collect(Collectors.toList());
+        detailVO.setStatusLogs(statusLogs);
+
+        return detailVO;
     }
 
     @Override

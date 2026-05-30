@@ -9,6 +9,7 @@ import com.campus.recruitment.common.enums.JobStatus;
 import com.campus.recruitment.common.enums.UserType;
 import com.campus.recruitment.common.exception.BizException;
 import com.campus.recruitment.common.exception.ErrorCode;
+import com.campus.recruitment.common.mq.OutboxService;
 import com.campus.recruitment.common.result.PageResult;
 import com.campus.recruitment.entity.CompanyProfile;
 import com.campus.recruitment.entity.Job;
@@ -26,7 +27,6 @@ import com.campus.recruitment.module.job.vo.JobDetailVO;
 import com.campus.recruitment.module.job.vo.JobVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +47,7 @@ public class JobServiceImpl implements JobService {
     private final JobTagMapper jobTagMapper;
     private final JobFavoriteMapper jobFavoriteMapper;
     private final CompanyProfileMapper companyProfileMapper;
-    private final RabbitTemplate rabbitTemplate;
+    private final OutboxService outboxService;
 
     @Override
     public PageResult<JobVO> listJobs(JobQueryDTO queryDTO) {
@@ -388,21 +388,20 @@ public class JobServiceImpl implements JobService {
     }
 
     private void syncJobStatusToEs(Long jobId, String status) {
-        try {
-            String messageId = java.util.UUID.randomUUID().toString();
-            Map<String, Object> message = Map.of(
-                    "messageId", messageId,
-                    "action", "update",
-                    "jobId", jobId
-            );
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConstants.JOB_ES_EXCHANGE,
-                    RabbitMQConstants.JOB_ES_ROUTING_KEY,
-                    message
-            );
-            log.info("发送岗位ES同步MQ消息: messageId={}, jobId={}, action=update", messageId, jobId);
-        } catch (Exception e) {
-            log.error("发送岗位ES同步MQ消息失败: {}", e.getMessage(), e);
-        }
+        String messageId = java.util.UUID.randomUUID().toString();
+        Map<String, Object> message = Map.of(
+                "messageId", messageId,
+                "action", "update",
+                "jobId", jobId
+        );
+        outboxService.sendAfterCommit(
+                RabbitMQConstants.JOB_ES_EXCHANGE,
+                RabbitMQConstants.JOB_ES_ROUTING_KEY,
+                message,
+                messageId,
+                "JOB_ES_SYNC",
+                jobId);
+        log.info("发送岗位ES同步MQ消息(Outbox): messageId={}, jobId={}, action=update, status={}",
+                messageId, jobId, status);
     }
 }

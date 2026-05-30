@@ -37,8 +37,8 @@ public class NotifyMessageConsumer {
             String messageId = (String) notifyMessage.get("messageId");
 
             if (messageId == null) {
-                log.warn("Notify message is missing messageId, ack and skip");
-                channel.basicAck(deliveryTag, false);
+                log.error("Notify message is missing messageId, send to DLQ");
+                channel.basicNack(deliveryTag, false, false);
                 return;
             }
 

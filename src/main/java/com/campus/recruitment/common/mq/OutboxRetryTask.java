@@ -32,6 +32,7 @@ public class OutboxRetryTask {
                         .in(MqMessageLog::getSendStatus, "SEND_FAILED", "SENDING", "RETRYING")
                         .lt(MqMessageLog::getUpdateTime, threshold)
                         .lt(MqMessageLog::getSendRetryCount, MAX_SEND_RETRIES)
+                        .orderByAsc(MqMessageLog::getUpdateTime, MqMessageLog::getId)
                         .last("LIMIT 20"));
 
         for (MqMessageLog record : failedRecords) {
